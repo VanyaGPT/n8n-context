@@ -1,0 +1,351 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Slack Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "e534a0ec-132c-4e2a-b904-acfbce5068d0",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "9be2548a-d6f9-4490-86f1-3dfec8bb8bc4",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Slack Agent\n\n# Responsibility\n\nYour role is to manage Slack communications by retrieving user and channel data, checking messages, and sending messages to users or channels.\n\n# Your Available Agents Tools\n\n- Get All Users  \n- Get Users Status  \n- Send Message to User  \n- Send Message to Channel  \n- Check Recent Channel Messages  \n- Get Slack Channels  \n\n# Standard Operating Procedures (Example Tasks)\n\n- If asked about a **specific channel**, you **MUST first call the \"Get Slack Channels\"** tool to retrieve the exact channel name and ID.  \n- If asked about a **specific user**, you **MUST first call the \"Get All Users\"** tool to retrieve the exact username and ID.  \n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "874bec1d-6094-4431-b233-de36d851ca2c",
+      "name": "Slack Agent"
+    },
+    {
+      "parameters": {
+        "resource": "user",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        600
+      ],
+      "id": "439ec3ea-6236-4335-8e48-f067e9a369e8",
+      "name": "Get All Users",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "user",
+        "operation": "getPresence",
+        "user": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('User', ``, 'string') }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        880,
+        600
+      ],
+      "id": "58d300ee-0eb5-4442-bd14-2cb3886e8d99",
+      "name": "Get Users Status",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('User', ``, 'string') }}",
+          "mode": "id"
+        },
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_Text', ``, 'string') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        600
+      ],
+      "id": "10e6ae49-7a20-42b5-93d5-f746a27ba804",
+      "name": "Send Message to User",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel', ``, 'string') }}",
+          "mode": "id"
+        },
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_Text', ``, 'string') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        600
+      ],
+      "id": "ed4f8aa4-c424-4d8f-923d-2d216cdfbb8d",
+      "name": "Send Message to Channel",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        1560,
+        600
+      ],
+      "id": "67ffa755-29c2-4d22-a9d2-84838b991f01",
+      "name": "Get Slack Channels",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "operation": "history",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Channel', ``, 'string') }}",
+          "mode": "id"
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        1380,
+        600
+      ],
+      "id": "9e4451db-ed70-4166-9598-6fc19f5f73d1",
+      "name": "Check Recent Channel Messages",
+      "webhookId": "db365bda-a5e2-4764-82f9-797d81af7e97",
+      "credentials": {
+        "slackApi": {
+          "id": "3U9vwEC7Tq4kllR2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "b5ba77e8-c98d-4116-85aa-c5e3cc42b3c0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Users": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Users Status": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message to User": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message to Channel": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Slack Channels": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Recent Channel Messages": {
+      "ai_tool": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Slack Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "92dbe4e5-3c79-4e2d-936c-f7fa7df43a3a",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "E9paLtQtPjimMkSH",
+  "tags": []
+}

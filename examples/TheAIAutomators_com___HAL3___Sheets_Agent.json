@@ -1,0 +1,370 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Sheets Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "25df121b-ee69-4e26-b39c-3ef79611d728",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "30c0038b-461c-4ab9-a6f8-8db141d8551e",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Google Sheets Agent\n\n# Responsibility\n\nYour role is to manage Google Sheets by creating new sheets, retrieving rows, appending data, and searching for specific sheets.\n\n# Your Available Agents Tools\n\n- Create a Google Sheet  \n- Retrieve Rows from Google Sheet  \n- Add to Household Expenses Sheet  \n- Get a Google Sheet  \n\n# Standard Operating Procedures (Example Tasks)\n\nIf you are asked to trigger a tool that requires a file ID, then use the **Get a Google Sheet** tool to get this.  \n\nIf you are asked to create a sheet, you **MUST provide the file ID** in the response.  \n\nIf you are asked to update the **Household Expenses Sheet**, retrieve the file first via the **Get a Google Sheet** tool (Filename: \"Household Expenses\") and then use the following column mapping:\n\n- **A:** ID  \n- **B:** Date  \n- **C:** Expense  \n- **D:** Cost  \n- **E:** Description  \n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "e273f6fc-85de-4add-a8bd-36b0faa75cfe",
+      "name": "Sheets Agent"
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "={{ $fromAI(\"sheetTitle\",\"Populate with an appropriate sheet title\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        600
+      ],
+      "id": "98b8dded-755f-4e40-9992-46e5c9d64015",
+      "name": "Create a Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "135uqsp46uFkrSl5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"documentId\",\"Populate with the Google Sheet Document ID\") }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"sheetId\",\"Populate with the Google Sheet Tab ID\") }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        900,
+        600
+      ],
+      "id": "8c1b311a-4559-45b4-b821-87f0687c4215",
+      "name": "Retrieve Rows from Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "135uqsp46uFkrSl5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $fromAI(\"filenamefoldernameSearchQuery\",\"Populate this with the name of the file or folder to search for. It returns also files and folders whose names partially match this search term.\") }}",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_",
+            "mode": "list",
+            "cachedResultName": "HAL",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        1280,
+        600
+      ],
+      "id": "e0ccb02c-0bcc-42ed-99af-c970f6545db4",
+      "name": "Get a Google Sheet",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EWleeRRH5RkdDMjLV1JE9xh4AJ3_ERjX-rZBAFNqbEA",
+          "mode": "list",
+          "cachedResultName": "Household Expenses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EWleeRRH5RkdDMjLV1JE9xh4AJ3_ERjX-rZBAFNqbEA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EWleeRRH5RkdDMjLV1JE9xh4AJ3_ERjX-rZBAFNqbEA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $fromAI(\"id\",\"Populate with a random 10 digit number\") }}",
+            "Description": "={{ $fromAI(\"desc\",\"Populate with a description of the expense\") }}",
+            "Cost": "={{ $fromAI(\"cost\",\"Populate with the cost of the expense\") }}",
+            "Expense": "={{ $fromAI(\"expenseTitle\",\"Populate with the title of the expense\") }}",
+            "Date": "={{ $fromAI(\"date\",\"Populate with the date of the expense\") }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Expense",
+              "displayName": "Expense",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cost",
+              "displayName": "Cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        1080,
+        600
+      ],
+      "id": "2d91c03e-5c3e-4420-a848-5df39c73abf8",
+      "name": "Add to Household Expenses Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "135uqsp46uFkrSl5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        600
+      ],
+      "id": "4f10ccdc-d735-4f2c-a55a-cdd62daff3b4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ↑ To Do\nSelect Google Sheet & Rename Appropriately",
+        "height": 80,
+        "width": 270,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        780
+      ],
+      "id": "348c5b8c-eddf-4bc7-a395-750780d3e535",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a Google Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Rows from Google Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a Google Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Household Expenses Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sheets Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "2c3f9ad9-8ac9-41ef-82d6-3333ccb717e5",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "LgG2uhVMIkpITHen",
+  "tags": []
+}

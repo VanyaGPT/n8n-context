@@ -1,0 +1,383 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - SEO Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "bb7effb7-4ecc-403c-9654-75bdb3453bbf",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        600
+      ],
+      "id": "b41bffa7-259f-40d6-8d65-8f3e4db9db52",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are an SEO Agent\n\n# Responsibility\n\nYour role is to analyze and retrieve SEO-related data from DataForSEO, including trends, keyword search volume, and content analysis, to optimize digital marketing strategies.\n\n# Your Available Agents Tools\n\n- Get YouTube Trends Data  \n- Get Google Trends Data  \n- Get Keyword Search Volume  \n- Content Analysis  \n- Get Google My Business Data  \n- Calculator  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "9a85d60e-a771-431f-a914-4f8461b3c5b7",
+      "name": "SEO Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_trends/explore/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"type\": \"youtube\",\n    \"keywords\": [\n      \"{keywords}\"\n    ],\n    \"location_code\": 2840\n  }\n]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "keywords",
+              "description": "Populate this with the keywords to get Youtube trends data",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        600
+      ],
+      "id": "0672cf1e-5750-4b95-9837-41258500ded3",
+      "name": "Get Youtube Trends Data",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_trends/explore/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"type\": \"web\",\n    \"keywords\": [\n      \"{keywords}\"\n    ],\n    \"location_code\": 2840\n  }\n]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "keywords",
+              "description": "Populate this with the keywords to get Youtube trends data",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        600
+      ],
+      "id": "21d6c676-8812-40c1-8359-cd55b7e43b20",
+      "name": "Get Google Trends Data",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\"keywords\":[{keywords}], \"location_code\":2840, \"sort_by\":\"relevance\"}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "keywords",
+              "description": "Populate this with the keywords",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        820,
+        600
+      ],
+      "id": "41e45a41-20b0-4926-b7de-3b3f4aa1ad77",
+      "name": "Get Keyword Search Volume",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/content_analysis/search/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\"keyword\":\"{keywords}\", \"search_mode\":\"as_is\", \"limit\":100}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "keywords",
+              "description": "Populate this with the keywords to analyse",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        600
+      ],
+      "id": "c8026810-61e1-4f88-be4a-41225a32a33e",
+      "name": "Content Analysis",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/business_data/google/my_business_info/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[{\"keyword\":\"{keyword}\", \"location_code\":2840, \"language_code\":\"en\"}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "keyword",
+              "description": "Populate this with the business name to analyse",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1160,
+        580
+      ],
+      "id": "c2011f30-59ac-4270-ab62-1117c9ab0875",
+      "name": "Get Google My Business Data",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        580
+      ],
+      "id": "61ed6648-d69a-40fb-9c87-592185cb7637",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        600
+      ],
+      "id": "8fde496b-d86d-4a7d-9ce7-b18f2167b94a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Youtube Trends Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Google Trends Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keyword Search Volume": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Analysis": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Google My Business Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "8b786578-1310-4dc2-a3db-4b15f87c770c",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "lnTS6OKMhTgenJ4S",
+  "tags": []
+}

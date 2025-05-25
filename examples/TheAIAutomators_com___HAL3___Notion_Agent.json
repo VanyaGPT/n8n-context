@@ -1,0 +1,327 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Notion Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "66f91141-b149-43a2-8f15-30229fabe333",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "67d08d3f-aa24-48d2-ab2d-0e082d8df723",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Notion Agent\n\n# Responsibility\n\nYour role is to manage Notion data by retrieving and updating meal plans, habits, and other database entries.\n\n# Your Available Agents Tools\n\n- Get My Weekly Meal Planner  \n- Get My Meals  \n- Get Habits  \n- Create Meal  \n\n# Standard Operating Procedures (Example Tasks)\n\nNo matter the call, you **MUST first call the Get Databases tool** to understand what is available in Notion.  \nThen, determine the appropriate action based on the retrieved information.\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "bfdf72dc-bc93-420a-8fc2-b3a98e381b95",
+      "name": "Notion Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        360,
+        600
+      ],
+      "id": "82428b61-ce5a-40bb-ab66-435a8a10ea22",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "19a922ba-8404-8156-989e-fb02f698567a",
+          "mode": "list",
+          "cachedResultName": "Weekly Plan",
+          "cachedResultUrl": "https://www.notion.so/19a922ba84048156989efb02f698567a"
+        },
+        "returnAll": true,
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        600
+      ],
+      "id": "f96f8ebd-adb8-4cab-aa49-69585257bae9",
+      "name": "Get My Weekly Meal Planner",
+      "credentials": {
+        "notionApi": {
+          "id": "NBS6rO4VV7stLGQX",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "19a922ba-8404-8103-831a-f3f4a13f7d59",
+          "mode": "list",
+          "cachedResultName": "Meals",
+          "cachedResultUrl": "https://www.notion.so/19a922ba84048103831af3f4a13f7d59"
+        },
+        "returnAll": true,
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        920,
+        580
+      ],
+      "id": "eb07d9ce-c235-472f-94df-922bac6492fc",
+      "name": "Get My Meals",
+      "credentials": {
+        "notionApi": {
+          "id": "NBS6rO4VV7stLGQX",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "19a922ba-8404-8002-b10d-c50c8f5ceba0",
+          "mode": "list",
+          "cachedResultName": "Habit Tracker",
+          "cachedResultUrl": "https://www.notion.so/19a922ba84048002b10dc50c8f5ceba0"
+        },
+        "returnAll": true,
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1080,
+        580
+      ],
+      "id": "1bfe0108-3df6-47c5-b774-27ac74674188",
+      "name": "Get Habits",
+      "credentials": {
+        "notionApi": {
+          "id": "NBS6rO4VV7stLGQX",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "19a922ba-8404-8103-831a-f3f4a13f7d59",
+          "mode": "list",
+          "cachedResultName": "Meals",
+          "cachedResultUrl": "https://www.notion.so/19a922ba84048103831af3f4a13f7d59"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Meal|multi_select",
+              "multiSelectValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Option_Names_or_IDs', ``, 'string') }}"
+            },
+            {
+              "key": "Tags|multi_select",
+              "multiSelectValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Option_Names_or_IDs', ``, 'string') }}"
+            },
+            {
+              "key": "Meal Name|title",
+              "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1220,
+        580
+      ],
+      "id": "b279ffb2-e222-4e96-9b48-be558c6f5c11",
+      "name": "Create Meal",
+      "credentials": {
+        "notionApi": {
+          "id": "NBS6rO4VV7stLGQX",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ↑ To Do\nChoose Database",
+        "height": 80,
+        "width": 270,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        940,
+        780
+      ],
+      "id": "9632f29d-5efd-4136-a26b-87f791f4b6f3",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get My Weekly Meal Planner": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get My Meals": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Habits": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Meal": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notion Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "81608d06-2be7-452b-a0bf-9327525a53da",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "fHtusj89q2bnCZEj",
+  "tags": []
+}

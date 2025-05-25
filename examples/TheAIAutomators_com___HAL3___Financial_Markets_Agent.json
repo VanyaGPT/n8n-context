@@ -1,0 +1,242 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Financial Markets Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "2465ad15-bd76-40a9-825b-f396273fbfc3",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        600
+      ],
+      "id": "9fb3baf5-6401-41af-ace7-ecfe0c964d7e",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search?engine=google_finance&q={query}&window={window}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "query",
+              "description": "The parameter defines the query you want to search. The query can be one of the following types:  Stock. For example - NVDA:NASDAQ. Index. For example - .DJI:INDEXDJ. Mutual Fund. For example - VTSAX:MUTF. Currency. For example - BTC-USD. Futures. For example - GCW00:COMEX.  Note: currencies and cryptocurrencies use a hyphen - instead of a colon : to separate the symbol from the exchange."
+            },
+            {
+              "name": "window",
+              "description": "Specifies the time period for which graph results will be returned. Available options include:  1D (Default) - past 1 day. 5D - past 5 days. 1M - past 1 month. 6M - past 6 months. YTD - current year to date. 1Y - past 1 year. 5Y - past 5 years. MAX - maximum available graph data."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        500,
+        600
+      ],
+      "id": "4f242184-a8cb-436f-a112-18d0d5aedb7b",
+      "name": "Check Markets",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YhJlD8EuiCtvIuyV",
+          "name": "SearchAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://finnhub.io/api/v1/search?q={query}&exchange=US",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "query",
+              "description": "Query text can be symbol, name, isin, or cusip. Examples:  /search?q=apple&exchange=US  /search?q=US5949181045"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        600
+      ],
+      "id": "952963e5-5e87-4d18-8340-def9eb56abc1",
+      "name": "Symbol Lookup",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DTPO5EgZPBeDnsau",
+          "name": "Finnhub.io"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Financial Markets Agent\n\n# Responsibility\n\nYour role is to assist with financial market data by performing market checks, looking up stock symbols, and handling calculations.\n\n# Your Available Agents Tools\n\n- Check Markets  \n- Symbol Lookup  \n- Calculator  \n\n# Standard Operating Procedures (Example Tasks)\n\n- You **MUST use the \"Symbol Lookup\"** tool before checking market data to ensure the correct ticker symbol is used.  \n- When checking market data, you **MUST include the exchange** in the format **SYMBOL:EXCHANGE** (e.g., AAPL:NASDAQ).  \n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "edf949af-3b79-4f7a-b10e-154c78b6d5df",
+      "name": "Financial Markets Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        840,
+        600
+      ],
+      "id": "88426d70-f77e-4260-acde-17da9647fc14",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        600
+      ],
+      "id": "48c9b15b-c77e-4cab-ba75-81fcfb118219",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Markets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Symbol Lookup": {
+      "ai_tool": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Financial Markets Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "8502ebff-5596-47dd-8921-2bb017e16335",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "ibJtyCkAEUDClsoy",
+  "tags": []
+}

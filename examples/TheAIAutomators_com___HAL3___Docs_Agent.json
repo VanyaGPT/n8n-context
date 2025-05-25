@@ -1,0 +1,299 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Docs Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "50d8f064-a624-4ad3-92c5-a3c5cab12534",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "ea0b7627-771f-43ad-bf05-1bf03eb7b4d5",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Google Docs Agent\n\n# Responsibility\n\nYour role is to manage Google Docs by creating, retrieving, and updating documents as needed.\n\n# Your Available Agents Tools\n\n- Create Document  \n- Update Doc  \n- Get Doc  \n\n# Standard Operating Procedures (Example Tasks)\n\nIf asked to create / update a google doc, always return the doc URL. It tasks the format of \nhttps://docs.google.com/document/d/<DOC-ID>/edit\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "616f0c56-916d-4590-baf4-4b5d2d29fd8e",
+      "name": "Docs Agent"
+    },
+    {
+      "parameters": {
+        "folderId": "1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_",
+        "title": "={{ $fromAI(\"documentTitle\",\"Popualte this with a relevant document title\") }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        620
+      ],
+      "id": "f2cb7f4f-9c3c-4a96-b4c0-e9f411f39df3",
+      "name": "Create Document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "iHXJrQ1LXzGDaKdQ",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $fromAI(\"docID\",\"Populate this with the DocumentID\") }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $fromAI(\"textBody\",\"Populate this with relevant text based on the users request\") }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        620
+      ],
+      "id": "7eac901f-11a1-4bc0-b29d-a411aed59a1d",
+      "name": "Update Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "iHXJrQ1LXzGDaKdQ",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $fromAI(\"docID\",\"Populate this with the DocumentID\") }}",
+        "simple": false
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        960,
+        620
+      ],
+      "id": "60032e44-392f-453c-baf8-cd151190addf",
+      "name": "Get Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "iHXJrQ1LXzGDaKdQ",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        600
+      ],
+      "id": "5355e9d7-8152-46cf-8102-3b1ce9db5c5c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "<ADD MAKE WEBHOOK>",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "parametersBody": {
+          "values": [
+            {
+              "name": "content"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        620
+      ],
+      "id": "e2fb88f6-a7d6-4dde-8f36-907a31be5909",
+      "name": "Create Google Doc",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "4zVGktWc0f1Pm6hK",
+          "name": "Make.com Webhook Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Note\nN8N's Google Docs Integration does not support HTML. So here we're using a Make.com scenario to save to Google Docs.\n",
+        "height": 80,
+        "width": 470,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        780
+      ],
+      "id": "d197d569-8104-47d1-b3a9-fe57b581cc08",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### ↑ Add Make.com Scenario Webhook URL\nMake.com blueprint is in the Folder to be imported",
+        "height": 120,
+        "width": 270,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        780
+      ],
+      "id": "3facc4e7-bc27-46c7-a5d8-2ef317961ec6",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Docs Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Docs Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Document": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Update Doc": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Get Doc": {
+      "ai_tool": [
+        [
+          {
+            "node": "Docs Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Docs Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Doc": {
+      "ai_tool": [
+        [
+          {
+            "node": "Docs Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "f670afe4-0a03-432a-8f25-c7f9c9618c4f",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "yePh6V7nrSHqObke",
+  "tags": []
+}

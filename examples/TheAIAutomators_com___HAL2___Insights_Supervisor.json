@@ -1,0 +1,376 @@
+{
+  "name": "TheAIAutomators.com - HAL2 - Insights Supervisor",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "ff9234e5-9053-4ed5-ae3c-ce257244cdb3",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "d199bd01-15ea-4473-b36b-215067449a15",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are an Insights Supervisor Agent\n\n# Responsibility\n\nYour primary focus is to interpret the user's request, in the context of the conversation history, and then where relevant, delegate tasks to the appropriate agent tools, verify the quality of their work, and request revisions when necessary.\n\n# Your Available Agents Tools (Your Team)\n\nWe have implemented the “Agent as a tool” multi-agent system design.\n\nThe following are the agents/tools at your disposal:\n\n## **News and Search Agent**  \n**Responsibility:** Retrieve and process search and news data using DataForSEO, fetch webpage markdown via Jina AI, and facilitate information retrieval. Can also carry out Deep Research.\n**Tools Available:**  \n- **Google Search via DataForSEO** – Perform a Google search to retrieve relevant results.  \n- **Google News via DataForSEO** – Fetch the latest news articles from Google News.  \n- **Fetch Markdown via Jina AI** – Extract webpage content in markdown format. \n- **Deep Research via Jina AI** – DeepSearch combines web searching, reading, and reasoning for comprehensive investigation. Ideal for research tasks. \n\n## **SEO Agent**  \n**Responsibility:** Analyze and retrieve SEO-related data from DataForSEO, including trends, keyword search volume, and content analysis, to optimize digital marketing strategies.  \n**Tools Available:**  \n- **Get YouTube Trends Data** – Retrieve trending topics on YouTube.  \n- **Get Google Trends Data** – Fetch trending search queries from Google Trends.  \n- **Get Keyword Search Volume** – Analyze keyword popularity and competition.  \n- **Content Analysis** – Evaluate content for SEO effectiveness.  \n- **Get Google My Business Data** – Retrieve business performance insights from Google My Business.  \n- **Calculator** – Perform calculations related to SEO metrics.  \n\n## **Financial Markets Agent**  \n**Responsibility:** Assist with financial market data by performing market checks, looking up stock symbols, and handling calculations.  \n**Tools Available:**  \n- **Check Markets** – Retrieve stock market data and performance metrics.  \n- **Symbol Lookup** – Find stock ticker symbols for market queries.  \n- **Calculator** – Perform financial calculations and analyses.  \n\n## **Google Analytics Agent**  \n**Responsibility:** Retrieve and analyze website traffic data, user behavior, and source medium breakdowns to provide insights for digital strategy optimization.  \n**Tools Available:**  \n- **User Session Page View Report** – Retrieve session and page view metrics.  \n- **Country Report** – Analyze website traffic based on geographic location.  \n- **Browser Report** – Identify which browsers visitors use.  \n- **Top Pages** – Retrieve the most visited pages on a website.  \n- **Source Medium Breakdown** – Analyze traffic sources and mediums.  \n- **Calculator** – Perform calculations for analytics insights.  \n\n# Standard Operating Procedures (Example Tasks)\n\n## Deep Research\n\nIf the user is asking specifically for \"Deep Research\" make sure to communicate this with the News & Search Agent\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n- Call tools multiple times if neccesary to achieve the desired outcome\n- Only delegate tasks to agents that have the capabilities to complete those tasks"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "e7942c92-a7f1-45df-8134-bab2c8e5c307",
+      "name": "Insights Supervisor"
+    },
+    {
+      "parameters": {
+        "name": "SEO_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "lnTS6OKMhTgenJ4S",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - SEO"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        900,
+        600
+      ],
+      "id": "468845a4-ec51-41ea-9a91-38f8d5017c5a",
+      "name": "SEO Agent"
+    },
+    {
+      "parameters": {
+        "name": "Financial_Markets_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "ibJtyCkAEUDClsoy",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Financial Markets Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        600
+      ],
+      "id": "e683a5e8-c3b5-4811-b8f8-2da9f25ae5e0",
+      "name": "Financial Markets Agent"
+    },
+    {
+      "parameters": {
+        "name": "Google_Analytics_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "Bb5zZyV4PZwWwX18",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Google Analytics Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        600
+      ],
+      "id": "b69fb9d2-1a9a-402d-b152-818d500c9db7",
+      "name": "Google Analytics"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "d2d9cd27-92f9-4e1e-996a-bbeaa4ade223",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Google_News_Search_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "dI09pwrXLH8JhJQx",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Google Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        720,
+        600
+      ],
+      "id": "6ed45f65-9fff-4d6b-87a1-9a4ff0ca6569",
+      "name": "News and Search Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEO Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Financial Markets Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Analytics": {
+      "ai_tool": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News and Search Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Insights Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "19779332-14b0-4266-99bc-c9a9d3000eaf",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "0CX4ZptDGmI9NzW5",
+  "tags": []
+}

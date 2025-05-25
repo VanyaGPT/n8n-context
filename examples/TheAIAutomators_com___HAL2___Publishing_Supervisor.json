@@ -1,0 +1,358 @@
+{
+  "name": "TheAIAutomators.com - HAL2 - Publishing Supervisor",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "977a4198-e1cf-4a4b-89ce-1260ebb788e4",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "83aebb91-c8b3-443b-8395-3e77a2ccf14e",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Publishing Supervisor Agent\n\n# Responsibility\n\nYour primary focus is to interpret the user's request, in the context of the conversation history, and then where relevant, delegate tasks to the appropriate agent tools, verify the quality of their work, and request revisions when necessary.\n\n# Your Available Agents Tools (Your Team)\n\nWe have implemented the “Agent as a tool” multi-agent system design.\n\nThe following are the agents/tools at your disposal:\n\n## **Social Media Agent**  \n**Responsibility:** Manage social media postings by requesting the publication of content on various platforms.  \n**Tools Available:**  \n- **Request Posting to Facebook** – Publish content to Facebook.  \n- **Request Posting to X (Twitter)** – Publish content to X (Twitter).  \n- **Request Posting to LinkedIn** – Publish content to LinkedIn.  \n- **Request Posting to Instagram** – Publish content to Instagram.  \n\n## **Image Agent**  \n**Responsibility:** Fetch stock images and generate AI-generated images.  \n**Tools Available:**  \n- **Fetch Stock Image (Powered by Pixabay)** – Retrieve stock images for content creation.  \n- **Generate AI Image (Powered by Flux1.1 Pro Ultra)** – Create AI-generated images based on user input.  \n\n## **WordPress Agent**  \n**Responsibility:** Manage WordPress content by creating posts, searching for existing content, and retrieving user data.  \n**Tools Available:**  \n- **Create WordPress Post** – Publish a new post on WordPress.  \n- **Search WordPress** – Look for existing posts based on keywords.  \n- **Get All Users** – Retrieve a list of WordPress users.  \n\n## **Fetch Markdown via Jina AI**  \n**Responsibility:** Extract webpage content in markdown format for republishing or reference.  \n**Tools Available:**  \n- **Fetch Markdown via Jina AI** – Retrieve and format web content in markdown.  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n- Call tools multiple times if neccesary to achieve the desired outcome\n- Only delegate tasks to agents that have the capabilities to complete those tasks"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "30f1fd76-859d-42ca-8c7b-0ca8854b54b7",
+      "name": "Publishing Supervisor"
+    },
+    {
+      "parameters": {
+        "name": "Social_Media_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "uDWe6LWwfBeMX2as",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Social Media Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        740,
+        600
+      ],
+      "id": "a61ae617-a95b-4ff9-8c21-a0897e1c8fe6",
+      "name": "Social Media Agent"
+    },
+    {
+      "parameters": {
+        "name": "Image_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "J0Q7TJliEi8zvyUL",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Image Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        920,
+        600
+      ],
+      "id": "858223c7-2c0b-406e-9bf9-861c57ec8617",
+      "name": "Image Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fetch Webpage Markdown via Jina AI. This is useful for getting details of a webpage found from the Google Search tools",
+        "url": "https://r.jina.ai/{url}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "url",
+              "description": "This is the url to be accessed via Jina to extract the pages markdown",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        600
+      ],
+      "id": "45185044-05d4-471c-9893-3e04869009a6",
+      "name": "Fetch Markdown via Jina AI",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "x7I8BvKZyPR5Dzeo",
+          "name": "Jina.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Wordpress_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "nP54yumKBdPORvXO",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Wordpress Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        600
+      ],
+      "id": "8d15c629-1258-4916-951a-231afe2c11ad",
+      "name": "Wordpress Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "ed51415d-720e-4546-8db6-b3b86d170420",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Markdown via Jina AI": {
+      "ai_tool": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wordpress Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Publishing Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "5784ead9-ce36-4c8d-90dc-7f35bd6de18e",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "PR0bCYYys5xSUk2h",
+  "tags": []
+}

@@ -1,0 +1,304 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - News & Search Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "1caec480-06a3-4197-a489-5c56101e0cee",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -420,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -20,
+        100
+      ],
+      "id": "187a5215-8847-4384-b100-a7ed44c0a8a8",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fetch Webpage Markdown via Jina AI. This is useful for getting details of a webpage found from the Google Search tools",
+        "url": "https://r.jina.ai/{url}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "url",
+              "description": "This is the url to be accessed via Jina to extract the pages markdown"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        100
+      ],
+      "id": "d8be5786-b35f-40bc-a5e1-a37860ff59a7",
+      "name": "Fetch Markdown via Jina AI"
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool allows you to query the DataForSEO platform to fetch Google Search results for a specified query",
+        "method": "POST",
+        "url": "=https://api.dataforseo.com/v3/serp/google/organic/live/advanced",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "[{\"keyword\":\"{search_term}\", \"location_code\":2372, \"language_code\":\"en\", \"device\":\"desktop\", \"os\":\"windows\", \"depth\":10}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "search_term",
+              "description": "This is the search term to pass into Google Search. Only list the topic to be searched\n\nEXAMPLE USER QUERY: latest LLM news\nEXAMPLE OUTPUT: LLM",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        100
+      ],
+      "id": "f7181def-acae-4713-b843-61a443964807",
+      "name": "Google Search via DataForSEO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool allows you to query the DataForSEO platform to fetch Google News results for a specified query",
+        "method": "POST",
+        "url": "=https://api.dataforseo.com/v3/serp/google/news/live/advanced",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "[{\"keyword\":\"{search_term}\", \"location_code\":2372, \"language_code\":\"en\", \"device\":\"desktop\", \"os\":\"windows\", \"depth\":10}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "search_term",
+              "description": "This is the search term to pass into Google News. Only list the topic to be searched|EXAMPLE USER QUERY: latest LLM newsEXAMPLE OUTPUT: LLM",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        300,
+        100
+      ],
+      "id": "976eda54-7362-4fc8-9909-900847963e35",
+      "name": "Google News via DataForSEO",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        100
+      ],
+      "id": "d50ce48c-4735-4762-8c0b-28a25531f85c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Google Agent\n\n# Responsibility\n\nYour role is to retrieve and process search and news data using DataForSEO, fetch webpage markdown via Jina AI, and facilitate conversations using the Google Gemini Chat Model.\n\n# Your Available Agents Tools\n\n- Google Search via DataForSEO  \n- Google News via DataForSEO  \n- Fetch Markdown via Jina AI  \n- Deep Research via Jina AI\n\n# Standard Operating Procedures (Example Tasks)\n\n## Deep Research\n\nAlways return the output of the Deep Reseach IN FULL.\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -100,
+        -160
+      ],
+      "id": "b08528e4-1edf-4e43-b6bd-b3058325a427",
+      "name": "News & Search Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "DeepSearch combines web searching, reading, and reasoning for comprehensive investigation. Ideal for research tasks",
+        "method": "POST",
+        "url": "https://deepsearch.jina.ai/v1/chat/completions",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"model\": \"jina-deepsearch-v1\",\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"Produce a highly detailed report - {placeholder}\"\n        }\n    ],\n    \"stream\": false,\n    \"reasoning_effort\": \"high\"\n  }",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "placeholder",
+              "description": "Describe in detail what needs to be researched and what should be outputted"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        100
+      ],
+      "id": "887602dc-46f5-4271-ba83-137ae024ef88",
+      "name": "Deep Research via Jina AI"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Markdown via Jina AI": {
+      "ai_tool": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Search via DataForSEO": {
+      "ai_tool": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google News via DataForSEO": {
+      "ai_tool": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Research via Jina AI": {
+      "ai_tool": [
+        [
+          {
+            "node": "News & Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "30a80c76-9027-4fc8-ac14-b31976358954",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "dI09pwrXLH8JhJQx",
+  "tags": [
+    {
+      "createdAt": "2025-01-21T10:52:12.339Z",
+      "updatedAt": "2025-01-21T10:52:12.339Z",
+      "id": "Mwyb0MwOpcnfOHuD",
+      "name": "Agent"
+    }
+  ]
+}

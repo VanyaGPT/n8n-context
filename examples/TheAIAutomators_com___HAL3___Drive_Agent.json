@@ -1,0 +1,363 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Drive Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "63d565da-4864-4184-9a87-69c127f7e64a",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "f4788feb-2b67-4db7-b22a-266fd88f70d7",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Google Drive Agent\n\n# Responsibility\n\nYour role is to manage Google Drive files and folders by creating, searching, updating, and moving files as needed.\n\n# Your Available Agents Tools\n\n- Create Basic Text File  \n- Search for Files & Folders  \n- Create Folder  \n- Update File  \n- Move a File  \n\n# Standard Operating Procedures (Example Tasks)\n\nIf you are asked to trigger a tool that requires a file ID, then use the **Search for Files & Folders** tool to get this.\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "9c131155-d23b-4a9e-b76a-85fd0da9b218",
+      "name": "Drive Agent"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $fromAI(\"fileContents\",\"Popualte this with the contents of the file\") }}",
+        "name": "={{ $fromAI(\"fileName\",\"Populate this with a relevant file name. Append with the DateTime\") }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_",
+          "mode": "list",
+          "cachedResultName": "HAL",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        740,
+        600
+      ],
+      "id": "7ca77a3a-fe32-4c0f-9c7d-27e95690fc38",
+      "name": "Create Basic Text File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $fromAI(\"folderName\",\"Populate this with a relevant folder name\") }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_",
+          "mode": "list",
+          "cachedResultName": "HAL",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        1080,
+        600
+      ],
+      "id": "9d31ad5c-de83-4d82-9953-51212c53a1ce",
+      "name": "Create Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"fileIdToUpdate\",\"Provide this with the file ID to update\") }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        1240,
+        600
+      ],
+      "id": "65aac3fd-b993-4e47-ba20-02c818ac1891",
+      "name": "Update File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"fileIdToMove\",\"Provide this with the file ID to move\") }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $fromAI(\"folderToMoveTo\",\"Provide this with the folder ID where to move the file\") }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        1380,
+        600
+      ],
+      "id": "1e54dbfb-6316-4eca-8f12-3cdd93459026",
+      "name": "Move a File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $fromAI(\"filenamefoldernameSearchQuery\",\"Populate this with the name of the file or folder to search for. It returns also files and folders whose names partially match this search term.\") }}",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_",
+            "mode": "list",
+            "cachedResultName": "HAL",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1T4xx_03uLKdiNtOxOTRqzPoBHRH3Oka_"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        920,
+        600
+      ],
+      "id": "bb1c1209-f77c-4de2-9e7b-5a4e5606b977",
+      "name": "Search for Files Folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Jeh4SCfFarV9A3le",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "2678e524-ab6f-4fcc-972c-637ca19af18f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ↑ Configure Drives and Folders",
+        "height": 80,
+        "width": 610,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        800
+      ],
+      "id": "2039dad9-5f7e-47ca-9d21-8df83775bf4e",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Basic Text File": {
+      "ai_tool": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Folder": {
+      "ai_tool": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update File": {
+      "ai_tool": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move a File": {
+      "ai_tool": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for Files Folders": {
+      "ai_tool": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Drive Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "417bb0e0-aa08-465d-815f-abbf2898573d",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "xBRan5Qy7AmeTgs5",
+  "tags": []
+}

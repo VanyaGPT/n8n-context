@@ -1,0 +1,245 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Airtable Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "93dc6133-1038-48ee-ba6a-a61a750234c6",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "748a753a-eb41-45d4-8ca5-37afcd700599",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are an Airtable Agent\n\n# Responsibility\n\nYour role is to interact with Airtable by retrieving bases, fetching base schemas, and searching for specific records within a base.\n\n# Your Available Agents Tools\n\n- Airtable Get Bases  \n- Airtable Get Base Schema  \n- Search Airtable Base  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "26304849-f9ba-46fd-b3da-50c09c7ef497",
+      "name": "Airtable Agent"
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        600
+      ],
+      "id": "fee1e50f-a89c-403d-a646-e677c7844773",
+      "name": "Airtable Get Bases",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "QBU7E9DVU5PonIBw",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "operation": "getSchema",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Base', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        900,
+        600
+      ],
+      "id": "86eb17df-7d99-4bc7-96fe-07d3f006ba22",
+      "name": "Airtable Get Base Schema",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "QBU7E9DVU5PonIBw",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Base', ``, 'string') }}"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Table', ``, 'string') }}",
+          "mode": "id"
+        },
+        "filterByFormula": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Filter_By_Formula', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        600
+      ],
+      "id": "856a861f-c726-4130-b2bd-8dd5efb229ad",
+      "name": "Search Airtable Base",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "QBU7E9DVU5PonIBw",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        600
+      ],
+      "id": "fda6d465-fe09-44c2-9cae-7402d63fa3db",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable Get Bases": {
+      "ai_tool": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable Get Base Schema": {
+      "ai_tool": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Airtable Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Airtable Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "cbcfd2bb-b478-41c5-8f02-3aaf80b7bd35",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "xTbf9RrJju6b52rc",
+  "tags": []
+}

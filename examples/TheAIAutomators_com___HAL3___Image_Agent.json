@@ -1,0 +1,283 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Image Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "c430dcce-739e-4153-aab8-7f75fb30d211",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -320,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -20,
+        100
+      ],
+      "id": "b32f1f50-6346-4f22-bc9e-9fde60dce040",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are an Image Agent\n\n# Responsibility\n\nYour role is to fetch stock images and generate AI images using available tools.\n\n# Your Available Agents Tools\n\n- Fetch Stock Image (Powered by Pixabay)  \n- Generate AI Image (Powered by Flux1.1 Pro Ultra)  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -100,
+        -160
+      ],
+      "id": "ee9042cc-4dcb-483a-a7f5-c78f7941464a",
+      "name": "Image Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool allows an agent to generate an AI Image with Flux 1.1 Pro Ultra",
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/black-forest-labs/flux-1.1-pro-ultra/predictions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "Prefer",
+              "valueProvider": "fieldValue",
+              "value": "wait"
+            },
+            {
+              "name": "Content-Type",
+              "valueProvider": "fieldValue",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"input\": {\n      \"prompt\": \"{image_prompt}\",\n      \"aspect_ratio\": \"{aspect_ratio}\"\n\t}\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "image_prompt",
+              "description": "Populate this with a relevant short image prompt",
+              "type": "string"
+            },
+            {
+              "name": "aspect_ratio",
+              "description": "Populate this with 16:9, 9:16 or 1:1 depending on the context and the social platform being posted to",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        100
+      ],
+      "id": "474e0d53-e7f8-4a32-824c-feab2090631a",
+      "name": "Generate AI Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SMspGRvJMBskuFv2",
+          "name": "Replicate"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call this tool to fetch a stock image. The input should be a search term (keep it concise)",
+        "url": "https://pixabay.com/api/",
+        "sendQuery": true,
+        "parametersQuery": {
+          "values": [
+            {
+              "name": "key",
+              "valueProvider": "fieldValue",
+              "value": "<ADD KEY>"
+            },
+            {
+              "name": "q",
+              "valueProvider": "fieldValue",
+              "value": "{search_term}"
+            },
+            {
+              "name": "per_page",
+              "valueProvider": "fieldValue",
+              "value": "5"
+            },
+            {
+              "name": "image_type",
+              "valueProvider": "fieldValue",
+              "value": "photo"
+            }
+          ]
+        },
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "search_term",
+              "description": "search term to reflect the users query",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        180,
+        100
+      ],
+      "id": "36603cba-550a-454d-ab4d-790be8430c6c",
+      "name": "Fetch Stock Image"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        100
+      ],
+      "id": "3937c1f1-1a06-49aa-b46d-e5d62ca97444",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ↑ Add Pixabay Key",
+        "height": 80,
+        "width": 170,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        260
+      ],
+      "id": "7b078949-989a-4443-a4d7-487a90791846",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Image Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Image Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Image": {
+      "ai_tool": [
+        [
+          {
+            "node": "Image Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Stock Image": {
+      "ai_tool": [
+        [
+          {
+            "node": "Image Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Image Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "46c674e9-3419-4e48-8b2a-21e9710393a7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "J0Q7TJliEi8zvyUL",
+  "tags": [
+    {
+      "createdAt": "2025-01-21T10:52:12.339Z",
+      "updatedAt": "2025-01-21T10:52:12.339Z",
+      "id": "Mwyb0MwOpcnfOHuD",
+      "name": "Agent"
+    }
+  ]
+}

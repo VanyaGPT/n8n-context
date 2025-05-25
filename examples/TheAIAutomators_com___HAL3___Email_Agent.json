@@ -1,0 +1,273 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "4c540528-f437-41e9-aa21-4a0f8b6c409b",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "76aa412a-c39c-426d-a40e-5ec0106ac8f9",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are an Email Agent\n\n# Responsibility\n\nYour role is to manage emails on Gmail by searching, drafting, retrieving labels, and adding labels to messages.\n\n# Your Available Agents Tools\n\n- Search Emails  \n- Draft Email  \n- Get All Labels  \n- Add Label to Email  \n\n# Standard Operating Procedures (Example Tasks)\n\nIf you are asked to search for an email, you'll need to provide it a Gmail search filter. Examples below.\n\n# Gmail Search Operators Reference\n\nPeople & Recipients\nfrom: Emails from a specific sender (from:me)\nto: Emails sent to a specific person (to:john@example.com)\ncc:/bcc: Emails where someone is in CC or BCC (cc:john@example.com)\n\nSubject & Content\nsubject: Search by subject (subject:dinner)\nhas: Emails containing attachments, inline images, or specific Google Drive files (has:attachment, has:document)\nlist: Emails from a mailing list (list:info@example.com)\nfilename: Emails with specific file attachments (filename:pdf)\n\" \" (quotes): Exact phrase search (\"dinner and movie tonight\")\n\nDate & Time\nafter:/before:/older:/newer: Search by date (after:2024/01/01)\nolder_than:/newer_than: Search relative to today (older_than:1y, newer_than:2d)\n\nFilters & Operators\nOR or { } Match one or more conditions (from:amy OR from:david)\nAND Match all conditions (from:amy AND to:david)\n- Exclude words (dinner -movie)\nAROUND(X) Words near each other (holiday AROUND 10 vacation)\n( ) Group terms (subject:(dinner movie))\n\nLabels & Categories\nlabel: Search within a label (label:important)\ncategory: Search within inbox categories (category:promotions)\nhas:userlabels/has:nouserlabels: Emails with or without user-applied labels\n\nSpecial Statuses\nis: Search by email status (is:unread, is:important)\nin:anywhere: Search across all Gmail folders (in:anywhere movie)\nin:snoozed: Search snoozed emails (in:snoozed birthday reminder)\nis:muted: Search muted conversations (is:muted)\n\nEmail Size & Exact Matches\nsize:/larger:/smaller: Search by email size (larger:10M)\n+ Exact word match (+unicorn)\nrfc822msgid: Find emails by message ID\n\nDelivery & Addressing\ndeliveredto: Search emails delivered to a specific address (deliveredto:username@example.com)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "f206d2f6-22d4-45bc-855e-9dcdf473b773",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "filters": {
+          "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        740,
+        560
+      ],
+      "id": "55a225e3-4649-4db1-b1b8-17ecc8feaf89",
+      "name": "Search Emails",
+      "webhookId": "b8c9b1d2-f56e-40b7-ae04-bef0f6ae7005",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EVN5zTDfyoZXRPq5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "ccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CC', ``, 'string') }}",
+          "threadId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Thread_ID', ``, 'string') }}",
+          "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To_Email', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        940,
+        560
+      ],
+      "id": "5b1a3a09-314a-418c-9c9d-364773f1c128",
+      "name": "Draft Email",
+      "webhookId": "afa67851-b257-4077-b759-9be4ff3d4ddc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EVN5zTDfyoZXRPq5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1140,
+        560
+      ],
+      "id": "264efad7-4708-49c6-8105-10552492aa3f",
+      "name": "Get All Labels",
+      "webhookId": "679552eb-669e-48e7-9c05-85f86ea7d724",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EVN5zTDfyoZXRPq5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "labelIds": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names_or_IDs', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        560
+      ],
+      "id": "00755782-6fa1-4bf2-9fe1-cf3c59641125",
+      "name": "Add Label to Email",
+      "webhookId": "d80efdeb-d294-480b-807c-ca021c6ad7ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "EVN5zTDfyoZXRPq5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "faeb613c-2204-44a9-9520-3d4ad60c1d9e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Emails": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Labels": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Label to Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "00e764a8-1cf0-4f2d-b6e4-357f975e53bd",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "6idOESrG49J7UMYg",
+  "tags": []
+}

@@ -1,0 +1,316 @@
+{
+  "name": "TheAIAutomators.com - HAL2 - Communication Supervisor",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "98b69ed7-eab2-46c3-b21e-ce4c3d90e655",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        600
+      ],
+      "id": "f8f3a508-532d-44ad-98b1-366ade9218d1",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "name": "Email_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "6idOESrG49J7UMYg",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Email Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        720,
+        600
+      ],
+      "id": "f85f3973-925e-4874-9a18-0d7ec7176c91",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Communication Supervisor Agent\n\n# Responsibility\n\nYour primary focus is to interpret the user's request, in the context of the conversation history, and then where relevant, delegate tasks to the appropriate agent tools, verify the quality of their work, and request revisions when necessary.\n\n# Your Available Agents Tools (Your Team)\n\nWe have implemented the “Agent as a tool” multi-agent system design.\n\nThe following are the agents/tools at your disposal:\n\n## **Email Agent**  \n**Responsibility:** Manage emails on Gmail by searching, drafting, retrieving labels, and adding labels to messages.  \n**Tools Available:**  \n- **Search Emails** – Retrieve emails based on specific criteria.  \n- **Draft Email** – Create a draft email in Gmail.  \n- **Get All Labels** – Fetch all available email labels.  \n- **Add Label to Email** – Assign a label to an email.  \n\n## **Slack Agent**  \n**Responsibility:** Manage Slack communications by retrieving user and channel data, checking messages, and sending messages to users or channels.  \n**Tools Available:**  \n- **Get All Users** – Retrieve a list of all Slack users.  \n- **Get Users Status** – Check the online status of a specific user.  \n- **Send Message to User** – Directly message a specific Slack user.  \n- **Send Message to Channel** – Post a message in a Slack channel.  \n- **Check Recent Channel Messages** – Retrieve the latest messages from a Slack channel.  \n- **Get Slack Channels** – Fetch a list of all available Slack channels.  \n\n## **X Twitter Agent**  \n**Responsibility:** Interact with X (formerly Twitter) by searching tweets, retrieving user information, and sending direct messages.  \n**Tools Available:**  \n- **Search X Twitter** – Find tweets based on keywords.  \n- **Send a DM to a Username** – Send a direct message to a specific Twitter user.  \n- **Get a User by Username** – Retrieve user information by username.  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n- Call tools multiple times if neccesary to achieve the desired outcome\n- Only delegate tasks to agents that have the capabilities to complete those tasks"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "6972c1f6-592f-49c1-becb-43877940a939",
+      "name": "Communication Supervisor"
+    },
+    {
+      "parameters": {
+        "name": "Slack_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "E9paLtQtPjimMkSH",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - Slack Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        880,
+        600
+      ],
+      "id": "5cb0dad3-6757-484b-944a-fe71bbe1b0be",
+      "name": "Slack Agent"
+    },
+    {
+      "parameters": {
+        "name": "X_Twitter_Agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "n8Qtr9v8SJNaerpt",
+          "mode": "list",
+          "cachedResultName": "The AI Automators — TheAIAutomators.com - HAL3 - X Twitter Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $fromAI(\"message\",\"Populate this with a relevant message to this subagent\")}}",
+            "sessionId": "={{ $('Workflow Input Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        600
+      ],
+      "id": "9cec73a5-74b7-46eb-afd5-29b5d2714d80",
+      "name": "X Twitter Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        600
+      ],
+      "id": "e0c6a1d2-2bc4-4749-8885-74629b34a51f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X Twitter Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Communication Supervisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "ea179731-949b-4e8b-86aa-a3efce06fa0d",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "KvCCOG2vGYbkjJQE",
+  "tags": []
+}

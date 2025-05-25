@@ -1,0 +1,242 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Wordpress Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "132e9cb7-14ac-4ded-a36e-97e115682140",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -320,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -20,
+        100
+      ],
+      "id": "0e78dbfd-500b-44ed-81ca-c5d513a9e7bd",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a WordPress Agent\n\n# Responsibility\n\nYour role is to manage WordPress content by creating posts, searching for existing content, and retrieving user data.\n\n# Your Available Agents Tools\n\n- Create WordPress Post  \n- Search WordPress  \n- Get All Users  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -100,
+        -160
+      ],
+      "id": "cc9f235a-cd8b-4c8e-bff4-adb38196afb4",
+      "name": "Wordpress Agent"
+    },
+    {
+      "parameters": {
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "additionalFields": {
+          "authorId": "={{ $fromAI(\"authorId\",\"Populate this with the user ID from the 'Get All Users' tool\") }}",
+          "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Content', ``, 'string') }}",
+          "slug": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Slug', ``, 'string') }}",
+          "status": "draft"
+        }
+      },
+      "type": "n8n-nodes-base.wordpressTool",
+      "typeVersion": 1,
+      "position": [
+        140,
+        100
+      ],
+      "id": "5c09a60b-b917-40b3-8e33-2598d5b1b406",
+      "name": "Create Wordpress Post",
+      "credentials": {
+        "wordpressApi": {
+          "id": "G84RMCnVABLMxqTk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "options": {
+          "search": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpressTool",
+      "typeVersion": 1,
+      "position": [
+        320,
+        100
+      ],
+      "id": "0aa5db06-6bab-4e9d-a183-95952e961520",
+      "name": "Search Wordpress",
+      "credentials": {
+        "wordpressApi": {
+          "id": "G84RMCnVABLMxqTk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "user",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wordpressTool",
+      "typeVersion": 1,
+      "position": [
+        500,
+        100
+      ],
+      "id": "c1fa6d67-7109-4ccb-b29b-385bc393e66e",
+      "name": "Get All Users",
+      "credentials": {
+        "wordpressApi": {
+          "id": "G84RMCnVABLMxqTk",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        100
+      ],
+      "id": "0b4eb4e4-89b1-46ab-80e9-624967074a8a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Wordpress Post": {
+      "ai_tool": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Wordpress": {
+      "ai_tool": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Users": {
+      "ai_tool": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Wordpress Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "4cd04b81-feb1-4c08-87da-2f31424b9377",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "nP54yumKBdPORvXO",
+  "tags": [
+    {
+      "createdAt": "2025-01-21T10:52:12.339Z",
+      "updatedAt": "2025-01-21T10:52:12.339Z",
+      "id": "Mwyb0MwOpcnfOHuD",
+      "name": "Agent"
+    }
+  ]
+}

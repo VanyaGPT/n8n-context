@@ -1,0 +1,239 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Travel Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "03e48de4-7c08-4c69-95af-57b897decb68",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        600
+      ],
+      "id": "0b9bd516-d836-4fc1-a440-eebdd31db476",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://www.searchapi.io/api/v1/search?arrival_id={arrival_id}&departure_id={departure_id}&engine=google_flights&flight_type={flight_type}&outbound_date={outbound_date}&return_date={return_date}&stops={stops}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "arrival_id",
+              "description": "This parameter specifies the code for the arrival airport or a location identifier.  Airport Code: A 3-letter uppercase code representing the arrival airport (e.g., MAD for Madrid-Barajas Airport or JFK for John F. Kennedy International Airport). "
+            },
+            {
+              "name": "departure_id",
+              "description": "This parameter specifies the code for the departure airport or a location identifier.  Airport Code: A 3-letter uppercase code representing the departure airport (e.g., MAD for Madrid-Barajas Airport or JFK for John F. Kennedy International Airport). "
+            },
+            {
+              "name": "return_date",
+              "description": "Defines the return date. The date format is YYYY-MM-DD."
+            },
+            {
+              "name": "outbound_date",
+              "description": "Defines the outbound date. The date format is YYYY-MM-DD."
+            },
+            {
+              "name": "flight_type",
+              "description": "Defines the type of the flights. Available options:  round_trip Default one_way multi_city"
+            },
+            {
+              "name": "stops",
+              "description": "Defines the number of stops during the flight. Available options:  any - Any number of stops. Default nonstop - Nonstop only. one_stop_or_fewer - 1 stop or fewer. two_stops_or_fewer - 2 stops or fewer."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        600
+      ],
+      "id": "157f3bac-e019-460e-8c14-87af738e0976",
+      "name": "Check Flights",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YhJlD8EuiCtvIuyV",
+          "name": "SearchAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        600
+      ],
+      "id": "99318871-81e3-4591-8d85-89a7389324e7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool allows you to query the DataForSEO platform to fetch Google Search results for a specified query",
+        "method": "POST",
+        "url": "=https://api.dataforseo.com/v3/serp/google/organic/live/advanced",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "[{\"keyword\":\"{search_term}\", \"location_code\":2372, \"language_code\":\"en\", \"device\":\"desktop\", \"os\":\"windows\", \"depth\":10}]",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "search_term",
+              "description": "This is the search term to pass into Google Search. Only list the topic to be searched\n\nEXAMPLE USER QUERY: latest LLM news\nEXAMPLE OUTPUT: LLM",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        600
+      ],
+      "id": "efe90fc1-d829-4e0d-a150-f2155e0a0ffe",
+      "name": "Get Airport Code",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QEqHLLDH87SnB3dE",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Travel Agent\n\n# Responsibility\n\nYour role is to assist with travel planning by retrieving airport codes and checking flight availability.\n\n# Your Available Agents Tools\n\n- Check Flights  \n- Get Airport Code  \n\n# Standard Operating Procedures (Example Tasks)\n\n- You **MUST use the \"Get Airport Code\"** tool before checking flight data to ensure the correct airport codes are used.  \n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "900ee74b-efff-4c93-bed8-99cfff0ae2d9",
+      "name": "Travel Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Travel Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Travel Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Flights": {
+      "ai_tool": [
+        [
+          {
+            "node": "Travel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Travel Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Airport Code": {
+      "ai_tool": [
+        [
+          {
+            "node": "Travel Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "bbd78876-f52f-4cca-895b-da9f34927c19",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "Ai9jzyCLv3vBm4F2",
+  "tags": []
+}

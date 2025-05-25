@@ -1,0 +1,438 @@
+{
+  "name": "TheAIAutomators.com - HAL3 - Google Analytics Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "8dbdc7fc-8532-4952-afa8-83f09f9694e9",
+      "typeVersion": 1.1,
+      "name": "Workflow Input Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        260,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Workflow Input Trigger').item.json.sessionId }}-{{ $workflow.id }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        600
+      ],
+      "id": "469ac627-50d8-4668-9ad2-bda4ae9e3221",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        600
+      ],
+      "id": "b94061c2-e912-44f1-9302-22efb1727a99",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gYkej0afl0qEGo6M",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "=# Role\n\nYou are a Google Analytics Agent\n\n# Responsibility\n\nYour role is to retrieve and analyze website traffic data, user behavior, and source medium breakdowns to provide insights for digital strategy optimization.\n\n# Your Available Agents Tools\n\n- User Session Page View Report  \n- Country Report  \n- Browser Report  \n- Top Pages  \n- Source Medium Breakdown  \n- Calculator  \n\n# Standard Operating Procedures (Example Tasks)\n\n# Specifics\n- Current Date and Time: {{ $now }}\n- Be Detailed in your output\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        480,
+        340
+      ],
+      "id": "6dd45961-d0ce-4d10-b61f-2a8b7fad19df",
+      "name": "Google Analytics Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        600
+      ],
+      "id": "a10a3129-ef9a-49f6-bd4d-94b134f9feeb",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "=396083980",
+          "mode": "id"
+        },
+        "dateRange": "={{ $fromAI(\"dateRange\",\"Populate this with one of the following ... today, yesterday, last7days, last30days, lastCalendarMonth, lastCalendarWeek\",\"string\",\"last30days\") }}",
+        "metricsGA4": {
+          "metricValues": [
+            {},
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "screenPageViews"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {
+              "listName": "country"
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        600,
+        600
+      ],
+      "id": "ccbd110e-b6b3-4a4e-9eb4-3b5e24d816f4",
+      "name": "Country Report",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "jMPfsKTxfAC0IfH4",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "=396083980",
+          "mode": "id"
+        },
+        "dateRange": "={{ $fromAI(\"dateRange\",\"Populate this with one of the following ... today, yesterday, last7days, last30days, lastCalendarMonth, lastCalendarWeek\",\"string\",\"last30days\") }}",
+        "metricsGA4": {
+          "metricValues": [
+            {},
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "screenPageViews"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {}
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        460,
+        600
+      ],
+      "id": "ab6a94a3-c7d2-43f9-969e-066901d114d5",
+      "name": "User Session Page View Report",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "jMPfsKTxfAC0IfH4",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "=396083980",
+          "mode": "id"
+        },
+        "dateRange": "={{ $fromAI(\"dateRange\",\"Populate this with one of the following ... today, yesterday, last7days, last30days, lastCalendarMonth, lastCalendarWeek\",\"string\",\"last30days\") }}",
+        "metricsGA4": {
+          "metricValues": [
+            {},
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "screenPageViews"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {
+              "listName": "browser"
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        740,
+        600
+      ],
+      "id": "4be4acac-3469-4ff0-912d-ac3b1d6b92b3",
+      "name": "Browser Report",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "jMPfsKTxfAC0IfH4",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "=396083980",
+          "mode": "id"
+        },
+        "dateRange": "={{ $fromAI(\"dateRange\",\"Populate this with one of the following ... today, yesterday, last7days, last30days, lastCalendarMonth, lastCalendarWeek\",\"string\",\"last30days\") }}",
+        "metricsGA4": {
+          "metricValues": [
+            {},
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "screenPageViews"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {
+              "listName": "other",
+              "name": "pageTitle"
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        860,
+        600
+      ],
+      "id": "87404187-5a8c-4cee-972a-7d736ff36f51",
+      "name": "Top Pages",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "jMPfsKTxfAC0IfH4",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "=396083980",
+          "mode": "id"
+        },
+        "dateRange": "={{ $fromAI(\"dateRange\",\"Populate this with one of the following ... today, yesterday, last7days, last30days, lastCalendarMonth, lastCalendarWeek\",\"string\",\"last30days\") }}",
+        "metricsGA4": {
+          "metricValues": [
+            {},
+            {
+              "listName": "sessions"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {
+              "listName": "other",
+              "name": "sourceMedium"
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        600
+      ],
+      "id": "8e0fcdd1-d055-4f8c-b09d-00402b3e93c5",
+      "name": "Source Medium Breakdown",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "jMPfsKTxfAC0IfH4",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ↑ Add Property ID\n",
+        "height": 80,
+        "width": 610,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        780
+      ],
+      "id": "5b44beaf-0707-4551-a3bc-8da05847af19",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Country Report": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Session Page View Report": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Browser Report": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Top Pages": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Source Medium Breakdown": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "e66d8d9f-f621-43be-986d-b32f843a2f99",
+  "meta": {
+    "templateId": "VMiAxXa3lCAizGB5f7dVZQSFfg3FtHkdTKvLuupqBls=",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14f7c80232f401edf8cd4c1a00e4d1b7223e534aecc6f10ed85468c5c3bf3185"
+  },
+  "id": "Bb5zZyV4PZwWwX18",
+  "tags": []
+}
