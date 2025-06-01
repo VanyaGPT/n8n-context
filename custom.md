@@ -170,3 +170,9 @@
   }
 }
 ```
+
+---
+
+[custom context update] {Нельзя из кода ноды Code работать с файловой системой.} (username: i_van_afanasov, userid: not provided, datetime: 2025-06-01T10:53:01)
+
+Нельзя из кода ноды Code работать с файловой системой.
