@@ -176,3 +176,119 @@
 [custom context update] {Нельзя из кода ноды Code работать с файловой системой.} (username: i_van_afanasov, userid: not provided, datetime: 2025-06-01T10:53:01)
 
 Нельзя из кода ноды Code работать с файловой системой.
+
+---
+
+[custom context update] {Примеры правильных связей AI Agent с Tool и Chat Model} (username: i_van_afanasov, userid: not provided, datetime: 2025-06-01T13:34:01)
+
+1. Тут показано как правильно сделать связь root ноды и sub ноды {
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1684dd75-8b23-4184-bdf9-662b9cb12b77",
+      "name": "Pinecone Tool1",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        5620,
+        -1040
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0ae241c1-e281-4eba-9c5d-5eb1b2834f95",
+      "name": "AI Agent2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        5660,
+        -1320
+      ]
+    }
+  ],
+  "connections": {
+    "Pinecone Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d11bcfe2a6c88adcbd756ad320fe8856e5c92b6b9f8008915132b73c441cad97"
+  }
+}
+2. Тут показано, как правильно сделать связь между моделью и рут нодой {
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "0ae241c1-e281-4eba-9c5d-5eb1b2834f95",
+      "name": "AI Agent2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        5660,
+        -1320
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        5640,
+        -1120
+      ],
+      "id": "a89e57ec-48ca-4e5b-83b3-a447b8d6e07b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vFPnLHHOG9IHCMg2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "AI Agent2": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d11bcfe2a6c88adcbd756ad320fe8856e5c92b6b9f8008915132b73c441cad97"
+  }
+}
