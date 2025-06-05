@@ -1,255 +1,66 @@
-TITLE: Setting Default Form Field Values with Query Parameters - URL
-DESCRIPTION: This URL demonstrates how to pre-populate form fields ('email' and 'name') using query parameters. Special characters like '@' and spaces are percent-encoded ('%40' and '%20' respectively) to ensure proper parsing by the n8n Form Trigger. This method is applicable for setting initial values on any page of a multi-step form and is only available in production mode.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.form.md#_snippet_0
+TITLE: Formatting JSON Parameters in n8n HTTP Request Node
+DESCRIPTION: This snippet demonstrates how to correctly format JSON parameters when using an expression in the n8n HTTP Request node. It shows that the entire JSON object must be wrapped in double curly brackets {{ }} to be properly interpreted as an expression, ensuring valid JSON structure within.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/common-issues.md#_snippet_0
 
-LANGUAGE: Text
+LANGUAGE: JSON
 CODE:
 ```
-https://my-account.n8n.cloud/form/my-form?email=jane.doe%40example.com&name=Jane%20Doe
+{{    {
+    "myjson":
+    {
+        "name1": "value1",
+        "name2": "value2",
+        "array1":
+            ["value1","value2"]
+    }
+    }
+}}
 ```
 
 ----------------------------------------
 
-TITLE: Calling n8n API using API Key (Shell)
-DESCRIPTION: This shell script demonstrates how to make a GET request to the n8n API to retrieve active workflows. It shows examples for both self-hosted and n8n Cloud instances, including how to pass the API key in the 'X-N8N-API-KEY' header.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/api/authentication.md#_snippet_0
+TITLE: Defining an n8n Workflow with Multiple Nodes (JSON)
+DESCRIPTION: This JSON snippet defines an n8n workflow, illustrating the configuration of various nodes such as conditional logic ('If'), time delays ('Wait'), data manipulation ('Edit Fields'), and scheduled triggers. It also details the connections between these nodes, outlining the flow of data and execution within the workflow. The snippet demonstrates how to set parameters for each node, including specific values for assignments, wait times, and scheduling rules.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-2.md#_snippet_5
 
-LANGUAGE: shell
+LANGUAGE: json
 CODE:
 ```
-# For a self-hosted n8n instance
-curl -X 'GET' \
-  '<N8N_HOST>:<N8N_PORT>/<N8N_PATH>/api/v<version-number>/workflows?active=true' \
-  -H 'accept: application/json' \
-  -H 'X-N8N-API-KEY: <your-api-key>'
-
-# For n8n Cloud
-curl -X 'GET' \
-  '<your-cloud-instance>/api/v<version-number>/workflows?active=true' \
-  -H 'accept: application/json' \
-  -H 'X-N8N-API-KEY: <your-api-key>'
-```
-
-----------------------------------------
-
-TITLE: Configuring n8n with PostgreSQL in Docker
-DESCRIPTION: This command starts n8n in a Docker container, configuring it to use PostgreSQL as its database. It sets environment variables for the PostgreSQL database type, host, port, user, schema, and password, while also persisting n8n's user data and encryption key via a Docker volume.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/docker.md#_snippet_1
-
-LANGUAGE: sh
-CODE:
-```
-docker volume create n8n_data
-
-docker run -it --rm \
- --name n8n \
- -p 5678:5678 \
- -e DB_TYPE=postgresdb \
- -e DB_POSTGRESDB_DATABASE=<POSTGRES_DATABASE> \
- -e DB_POSTGRESDB_HOST=<POSTGRES_HOST> \
- -e DB_POSTGRESDB_PORT=<POSTGRES_PORT> \
- -e DB_POSTGRESDB_USER=<POSTGRES_USER> \
- -e DB_POSTGRESDB_SCHEMA=<POSTGRES_SCHEMA> \
- -e DB_POSTGRESDB_PASSWORD=<POSTGRES_PASSWORD> \
- -v n8n_data:/home/node/.n8n \
- docker.n8n.io/n8nio/n8n
-```
-
-----------------------------------------
-
-TITLE: Making HTTP Requests with Built-in Helpers (TypeScript)
-DESCRIPTION: This snippet demonstrates how to use n8n's built-in `this.helpers.httpRequest` for unauthenticated requests and `this.helpers.httpRequestWithAuthentication` for authenticated requests. These helpers internally use Axios and help avoid adding external npm dependencies to your n8n node, improving performance and security.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/code-standards.md#_snippet_1
-
-LANGUAGE: TypeScript
-CODE:
-```
-// If no auth needed
-const response = await this.helpers.httpRequest(options);
-
-// If auth needed
-const response = await this.helpers.httpRequestWithAuthentication.call(
-	this, 
-	'credentialTypeName', // For example: pipedriveApi
-	options,
-);
-```
-
-----------------------------------------
-
-TITLE: Configuring n8n and Traefik with Docker Compose (YAML)
-DESCRIPTION: This Docker Compose configuration defines two services: `traefik` for reverse proxying and SSL/TLS management, and `n8n` for the workflow automation platform. It sets up port mappings, persistent volumes for data and certificates, and environment variables for n8n, while Traefik is configured to use Docker as a provider and handle ACME challenges for SSL certificates.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/docker-compose.md#_snippet_8
-
-LANGUAGE: yaml
-CODE:
-```
-services:
-  traefik:
-    image: "traefik"
-    restart: always
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
-      - "--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}"
-      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - traefik_data:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-  n8n:
-    image: docker.n8n.io/n8nio/n8n
-    restart: always
-    ports:
-      - "127.0.0.1:5678:5678"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
-      - traefik.http.routers.n8n.tls=true
-      - traefik.http.routers.n8n.entrypoints=web,websecure
-      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
-      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
-      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
-      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
-      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
-      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
-      - traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}
-      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
-      - traefik.http.middlewares.n8n.headers.STSPreload=true
-      - traefik.http.routers.n8n.middlewares=n8n@docker
-    environment:
-      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
-      - NODE_ENV=production
-      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
-      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
-    volumes:
-      - n8n_data:/home/node/.n8n
-      - ./local-files:/files
-
-volumes:
-  n8n_data:
-  traefik_data:
-```
-
-----------------------------------------
-
-TITLE: Transforming Data to Comma-Separated Usernames in n8n Code Node - JavaScript
-DESCRIPTION: This JavaScript snippet transforms an array of input items into a single comma-separated string of usernames. Each username is enclosed in double quotation marks. It maps over the input items to extract and format usernames, then joins them into a single string, returning it as a JSON object.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/ai-code.md#_snippet_1
-
-LANGUAGE: JavaScript
-CODE:
-```
-const items = $input.all();
-const usernames = items.map((item) => `"${item.json.username}"`);
-const result = usernames.join(", ");
-return [{ json: { usernames: result } }];
-```
-
-----------------------------------------
-
-TITLE: Implementing `loadOptions` to Fetch Gmail Labels in JavaScript
-DESCRIPTION: This snippet demonstrates how to implement the `loadOptions` method within a programmatic-style n8n node. It shows how to query the Gmail API to retrieve a user's email labels, format them as `INodePropertyOptions`, and return them for display in the n8n GUI. This allows users to select dynamic options based on their service data.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/node-base-files/programmatic-style-parameters.md#_snippet_0
-
-LANGUAGE: JavaScript
-CODE:
-```
-	methods = {
-		loadOptions: {
-			// Get all the labels and display them
-			async getLabels(
-				this: ILoadOptionsFunctions,
-			): Promise<INodePropertyOptions[]> {
-				const returnData: INodePropertyOptions[] = [];
-				const labels = await googleApiRequestAllItems.call(
-					this,
-					'labels',
-					'GET',
-					'/gmail/v1/users/me/labels',
-				);
-				for (const label of labels) {
-					const labelName = label.name;
-					const labelId = label.id;
-					returnData.push({
-						name: labelName,
-						value: labelId,
-					});
+		"type": "n8n-nodes-base.if",
+		"typeVersion": 2,
+		"position": [
+			1280,
+			360
+		]
+		},
+		{
+		"parameters": {
+			"amount": 1,
+			"unit": "minutes"
+		},
+		"id": "5aa860b7-c73c-4df0-ad63-215850166f13",
+		"name": "Wait",
+		"type": "n8n-nodes-base.wait",
+		"typeVersion": 1.1,
+		"position": [
+			1480,
+			260
+		],
+		"webhookId": "be78732e-787d-463e-9210-2c7e8239761e"
+		},
+		{
+		"parameters": {
+			"assignments": {
+			"assignments": [
+				{
+				"id": "e058832a-2461-4c6d-b584-043ecc036427",
+				"name": "outputValue",
+				"value": "={{ $json['new-date'] }}",
+				"type": "string"
 				}
-				return returnData;
+			]
 			},
-		},
-	};
-```
-
-----------------------------------------
-
-TITLE: Configuring `loadOptions` for Dynamic Data Loading in JavaScript
-DESCRIPTION: This snippet demonstrates how to use the `loadOptions` object within the `methods` property to dynamically fetch user-specific settings from a service. It defines the `routing` for the API request (URL, method) and specifies `output` processing steps like extracting a `rootProperty`, setting key-value pairs using `setKeyValue`, and sorting the results alphabetically by `name` for GUI rendering.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/node-base-files/declarative-style-parameters.md#_snippet_0
-
-LANGUAGE: JavaScript
-CODE:
-```
-methods : {
-	loadOptions: {
-		routing: {
-			request: {
-				url: '/webhook/example-option-parameters',
-				method: 'GET',
-			},
-			output: {
-				postReceive: [
-					{
-						// When the returned data is nested under another property
-						// Specify that property key
-						type: 'rootProperty',
-						properties: {
-							property: 'responseData',
-						},
-					},
-					{
-						type: 'setKeyValue',
-						properties: {
-							name: '={{$responseItem.key}} ({{$responseItem.value}})',
-							value: '={{$responseItem.value}}',
-						},
-					},
-					{
-						// If incoming data is an array of objects, sort alphabetically by key
-						type: 'sort',
-						properties: {
-							key: 'name',
-						},
-					},
-				],
-			},
-		},
-	}
-},
-```
-
-----------------------------------------
-
-TITLE: Checking for Empty Variable with Ternary Operator in n8n
-DESCRIPTION: This snippet demonstrates using the ternary operator within an n8n expression to check if a variable from a previous node (`$json["variable_name"]`) is present. If the variable has a value, it is returned; otherwise, the string 'not found' is returned as a fallback. This is useful for handling missing or null data gracefully.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/expressions/check-incoming-data.md#_snippet_0
-
-LANGUAGE: JavaScript
-CODE:
-```
-{{$json["variable_name"]? $json["variable_name"] :"not found"}}
+			"includeOtherFields": true
 ```
 
 ----------------------------------------
@@ -266,706 +77,22 @@ npm install n8n -g
 
 ----------------------------------------
 
-TITLE: Setting Resource Requests and Limits for Kubernetes Pods (YAML)
-DESCRIPTION: This YAML snippet specifies the memory resource requests and limits for application containers within Kubernetes deployments. It sets a minimum memory request of 250Mi and a maximum limit of 500Mi, allowing Kubernetes to manage CPU resources automatically. These values can be adjusted based on specific application needs.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/google-cloud.md#_snippet_4
-
-LANGUAGE: yaml
-CODE:
-```
-resources:
-  requests:
-    memory: "250Mi"
-  limits:
-    memory: "500Mi"
-```
-
-----------------------------------------
-
-TITLE: Handling 401 Unauthorized Error in n8n Gmail Node
-DESCRIPTION: This snippet displays the full text of a "401 Unauthorized" error, which indicates issues with the credential's scopes or permissions when using the n8n Gmail node. It typically means the client is not authorized to retrieve access tokens or for the requested scopes. The solution involves enabling the Gmail API for OAuth2 credentials or enabling domain-wide delegation and adding the Gmail API for Service Account credentials.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/app-nodes/n8n-nodes-base.gmail/common-issues.md#_snippet_0
-
-LANGUAGE: JSON
-CODE:
-```
-401 - {"error":"unauthorized_client","error_description":"Client is unauthorized to retrieve access tokens using this method, or client not authorized for any of the scopes requested."}
-```
-
-----------------------------------------
-
-TITLE: Implementing Execute Method for FriendGrid Node in TypeScript
-DESCRIPTION: This snippet defines the `execute` method for an n8n node, which processes input data, makes API calls to SendGrid for contact creation, and returns the results. It demonstrates handling multiple input items and mapping node UI parameters to API request bodies.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/programmatic-style-node.md#_snippet_8
-
-LANGUAGE: TypeScript
-CODE:
-```
-// Handle data coming from previous nodes
-const items = this.getInputData();
-let responseData;
-const returnData = [];
-const resource = this.getNodeParameter('resource', 0) as string;
-const operation = this.getNodeParameter('operation', 0) as string;
-
-// For each item, make an API call to create a contact
-for (let i = 0; i < items.length; i++) {
-	if (resource === 'contact') {
-		if (operation === 'create') {
-			// Get email input
-			const email = this.getNodeParameter('email', i) as string;
-			// Get additional fields input
-			const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
-			const data: IDataObject = {
-				email,
-			};
-
-			Object.assign(data, additionalFields);
-
-			// Make HTTP request according to https://sendgrid.com/docs/api-reference/
-			const options: OptionsWithUri = {
-				headers: {
-					'Accept': 'application/json',
-				},
-				method: 'PUT',
-				body: {
-					contacts: [
-						data,
-					],
-				},
-				uri: `https://api.sendgrid.com/v3/marketing/contacts`,
-				json: true,
-			};
-			responseData = await this.helpers.requestWithAuthentication.call(this, 'friendGridApi', options);
-			returnData.push(responseData);
-		}
-	}
-}
-// Map data to n8n data structure
-return [this.helpers.returnJsonArray(returnData)];
-```
-
-----------------------------------------
-
-TITLE: Outline Structure for a Declarative-style n8n Node (JavaScript)
-DESCRIPTION: This snippet provides the basic class structure for a declarative-style n8n node. It imports necessary interfaces like `INodeType` and `INodeTypeDescription` from `n8n-workflow` and defines the `description` object, which contains the node's basic details and properties for resources and operations. Declarative nodes handle data processing via the `routing` key in `properties`.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/node-base-files/structure.md#_snippet_0
-
-LANGUAGE: JavaScript
-CODE:
-```
-import { INodeType, INodeTypeDescription } from 'n8n-workflow';
-
-export class ExampleNode implements INodeType {
-	description: INodeTypeDescription = {
-		// Basic node details here
-		properties: [
-			// Resources and operations here
-		]
-	};
-}
-```
-
-----------------------------------------
-
-TITLE: Disabling Webhook Processing on Main Process
-DESCRIPTION: This bash command sets an environment variable to disable production webhook processing on the main n8n instance. This ensures that all webhook executions are handled exclusively by dedicated webhook processors, preventing the main process from being overloaded and improving UI performance.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/scaling/queue-mode.md#_snippet_8
-
-LANGUAGE: bash
-CODE:
-```
-export N8N_DISABLE_PRODUCTION_MAIN_PROCESS=true
-```
-
-----------------------------------------
-
-TITLE: Example n8n Workflow JSON Structure (JSON)
-DESCRIPTION: This JSON snippet illustrates the detailed structure of an n8n workflow, including its ID, name, active status, and an array of configured nodes. Each node specifies its parameters, name, type, type version, position, and sometimes credentials, demonstrating various n8n node types like Start, HTTP Request, Airtable, IF, Set, Function, Discord, and Cron, along with their connections.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/embed/managing-workflows.md#_snippet_2
+TITLE: n8n JSON Output Configuration with Expressions
+DESCRIPTION: This JSON configuration is used in the 'JSON Output' field of an n8n node. It defines a new JSON structure including a static key, an array containing values from input fields using n8n expressions ({{ $json.id }}, {{ $json.name }}), and a nested object also referencing input fields.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.set.md#_snippet_3
 
 LANGUAGE: JSON
 CODE:
 ```
 {
-  "data": {
-    "id": "1012",
-    "name": "Nathan's Workflow",
-    "active": false,
-    "nodes": [
-      {
-        "parameters": {},
-        "name": "Start",
-        "type": "n8n-nodes-base.start",
-        "typeVersion": 1,
-        "position": [
-          130,
-          640
-        ]
-      },
-      {
-        "parameters": {
-          "authentication": "headerAuth",
-          "url": "https://internal.users.n8n.cloud/webhook/custom-erp",
-          "options": {
-            "splitIntoItems": true
-          },
-          "headerParametersUi": {
-            "parameter": [
-              {
-                "name": "unique_id",
-                "value": "recLhLYQbzNSFtHNq"
-              }
-            ]
-          }
-        },
-        "name": "HTTP Request",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 1,
-        "position": [
-          430,
-          300
-        ],
-        "credentials": {
-          "httpHeaderAuth": "beginner_course"
-        }
-      },
-      {
-        "parameters": {
-          "operation": "append",
-          "application": "appKBGQfbm6NfW6bv",
-          "table": "processingOrders",
-          "options": {}
-        },
-        "name": "Airtable",
-        "type": "n8n-nodes-base.airtable",
-        "typeVersion": 1,
-        "position": [
-          990,
-          210
-        ],
-        "credentials": {
-          "airtableApi": "Airtable"
-        }
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "string": [
-              {
-                "value1": "={{$json[\"orderStatus\"]}}",
-                "value2": "processing"
-              }
-            ]
-          }
-        },
-        "name": "IF",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 1,
-        "position": [
-          630,
-          300
-        ]
-      },
-      {
-        "parameters": {
-          "keepOnlySet": true,
-          "values": {
-            "number": [
-              {
-                "name": "=orderId",
-                "value": "={{$json[\"orderID\"]}}"
-              }
-            ],
-            "string": [
-              {
-                "name": "employeeName",
-                "value": "={{$json[\"employeeName\"]}}"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "name": "Set",
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 1,
-        "position": [
-          800,
-          210
-        ]
-      },
-      {
-        "parameters": {
-          "functionCode": "let totalBooked = items.length;\nlet bookedSum = 0;\n\nfor(let i=0; i < items.length; i++) {\n  bookedSum = bookedSum + items[i].json.orderPrice;\n}\nreturn [{json:{totalBooked, bookedSum}}]\n"
-        },
-        "name": "Function",
-        "type": "n8n-nodes-base.function",
-        "typeVersion": 1,
-        "position": [
-          800,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "webhookUri": "https://discord.com/api/webhooks/865213348202151968/oD5_WPDQwtr22Vjd_82QP3-_4b_lGhAeM7RynQ8Js5DzyXrQEnj0zeAQIA6fki1JLtXE",
-          "text": "=This week we have {{$json[\"totalBooked\"]}} booked orders with a total value of {{$json[\"bookedSum\"]}}. My Unique ID: {{$node[\"HTTP Request\"].parameter[\"headerParametersUi\"][\"parameter\"][0][\"value\"]}}"
-        },
-        "name": "Discord",
-        "type": "n8n-nodes-base.discord",
-        "typeVersion": 1,
-        "position": [
-          1000,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "triggerTimes": {
-            "item": [
-              {
-                "mode": "everyWeek",
-                "hour": 9
-              }
-            ]
-          }
-        },
-        "name": "Cron",
-        "type": "n8n-nodes-base.cron",
-        "typeVersion": 1,
-        "position": [
-          220,
-          300
-        ]
-      }
-    ],
-    "connections": {
-      "HTTP Request": {
-        "main": [
-          [
-            {
-              "node": "IF",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Start": {
-        "main": [
-          []
-        ]
-      },
-      "IF": {
-
-```
-
-----------------------------------------
-
-TITLE: Activating Credential Overwrite Endpoint (Shell)
-DESCRIPTION: This snippet demonstrates how to activate a custom REST endpoint for credential overwrites by setting the `CREDENTIALS_OVERWRITE_ENDPOINT` environment variable. This endpoint will be used to load sensitive credential data into n8n.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/embed/configuration.md#_snippet_0
-
-LANGUAGE: sh
-CODE:
-```
-export CREDENTIALS_OVERWRITE_ENDPOINT=send-credentials
-```
-
-----------------------------------------
-
-TITLE: Getting Execution Resume URL in JavaScript
-DESCRIPTION: This method provides the webhook URL necessary to resume a workflow that is currently paused at a Wait node. It enables external systems to trigger workflow continuation.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/builtin/n8n-metadata.md#_snippet_4
-
-LANGUAGE: JavaScript
-CODE:
-```
-$execution.resumeUrl
-```
-
-----------------------------------------
-
-TITLE: Managing Global Workflow Static Data in Python
-DESCRIPTION: This snippet illustrates how to retrieve, access, update, and delete global static data within an n8n workflow using Python. Global static data is shared across all nodes and is automatically persisted if modified upon successful workflow execution. It's ideal for storing small, persistent values such as timestamps.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/builtin/get-workflow-static-data.md#_snippet_1
-
-LANGUAGE: Python
-CODE:
-```
-# Get the global workflow static data
-workflowStaticData = _getWorkflowStaticData('global')
-
-# Access its data
-lastExecution = workflowStaticData.lastExecution
-
-# Update its data
-workflowStaticData.lastExecution = new Date().getTime()
-
-# Delete data
-delete workflowStaticData.lastExecution
-```
-
-----------------------------------------
-
-TITLE: n8n Standard Data Structure Example (JSON)
-DESCRIPTION: This JSON snippet illustrates the standard data structure for data items in n8n, showing how to wrap regular data in a 'json' key and binary data in a 'binary' key. It includes required and optional properties for binary files, such as 'data', 'mimeType', 'fileExtension', and 'fileName'.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/data/data-structure.md#_snippet_0
-
-LANGUAGE: json
-CODE:
-```
-[
-	{
-		"json": {
-			"apple": "beets",
-			"carrot": {
-				"dill": 1
-			}
-		},
-		"binary": {
-			"apple-picture": {
-				"data": "....",
-				"mimeType": "image/png",
-				"fileExtension": "png",
-				"fileName": "example.png"
-			}
-		}
-	}
-]
-```
-
-----------------------------------------
-
-TITLE: Setting pairedItem for n8n Programmatic Nodes (TypeScript)
-DESCRIPTION: This snippet demonstrates how to manually set the `pairedItem` property on new items returned by an n8n programmatic node. It shows two methods: using the `pairedItem` from an incoming item or setting the item index manually. The `input` property is optional and used when a node combines multiple inputs. This ensures proper data flow and prevents expressions in subsequent nodes from breaking.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/_snippets/data/data-mapping/item-linking-node-creators.md#_snippet_0
-
-LANGUAGE: typescript
-CODE:
-```
-// Use the pairedItem information of the incoming item
-newItem = {
-	"json": { . . . },
-	"pairedItem": {
-		"item": item.pairedItem,
-		// Optional: choose the input to use
-		// Set this if your node combines multiple inputs
-		"input": 0
-};
-
-// Or set the index manually
-newItem = {
-		"json": { . . . }
-		"pairedItem": {
-			"item": i,
-			// Optional: choose the input to use
-			// Set this if your node combines multiple inputs
-			"input": 0
-		},
-};
-```
-
-----------------------------------------
-
-TITLE: Installing Docker and Docker Compose on Ubuntu
-DESCRIPTION: This snippet provides a Bash script to remove old Docker installations, install prerequisites, download the Docker GPG key, configure the Docker APT repository, and finally install docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, and docker-compose-plugin on Ubuntu.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/docker-compose.md#_snippet_0
-
-LANGUAGE: bash
-CODE:
-```
-# Remove incompatible or out of date Docker implementations if they exist
-for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
-# Install prereq packages
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-# Download the repo signing key
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-# Configure the repository
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Update and install Docker and Docker Compose
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-----------------------------------------
-
-TITLE: Referencing External Secrets in n8n Expressions (JavaScript)
-DESCRIPTION: This snippet demonstrates the syntax for referencing an external secret within an n8n expression. It allows users to dynamically retrieve secret values from configured vaults like HashiCorp, Infisical, or AWS Secrets Manager. The <vault-name> placeholder should be replaced with the specific vault identifier, and <secret-name> with the actual name of the secret.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/external-secrets.md#_snippet_2
-
-LANGUAGE: JavaScript
-CODE:
-```
-{{ $secrets.<vault-name>.<secret-name> }}
-```
-
-----------------------------------------
-
-TITLE: Example Webhook Data Structure (JSON)
-DESCRIPTION: This JSON snippet illustrates the typical structure of data received by an n8n webhook trigger. It includes headers, parameters, query, and a 'body' property containing example user information (name, age, city) that can be accessed in subsequent workflow steps.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/expressions.md#_snippet_0
-
-LANGUAGE: JSON
-CODE:
-```
-[
-  {
-    "headers": {
-      "host": "n8n.instance.address",
-      ...
-    },
-    "params": {},
-    "query": {},
-    "body": {
-      "name": "Jim",
-      "age": 30,
-      "city": "New York"
-    }
-  }
-]
-```
-
-----------------------------------------
-
-TITLE: Error Data Structure for n8n Trigger Node Errors (JSON)
-DESCRIPTION: This JSON object illustrates the data structure received by the n8n Error Trigger when an error originates specifically from the trigger node of the main workflow. It provides less `execution` information and more detailed `trigger` context, including error name, cause, timestamp, and node details.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/_snippets/integrations/builtin/core-nodes/error-trigger/error-data.md#_snippet_1
-
-LANGUAGE: json
-CODE:
-```
-{
-  "trigger": {
-    "error": {
-      "context": {},
-      "name": "WorkflowActivationError",
-      "cause": {
-        "message": "",
-        "stack": ""
-      },
-      "timestamp": 1654609328787,
-      "message": "",
-      "node": {
-        ". . . "
-      }
-    },
-    "mode": "trigger"
-  },
-  "workflow": {
-    "id": "",
-    "name": ""
-  }
+  "newKey": "new value",
+  "array": [{{ $json.id }},"{{ $json.name }}"],
+  "object": {
+    "innerKey1": "new value",
+    "innerKey2": "{{ $json.id }}",
+    "innerKey3": "{{ $json.name }}"
+ }
 }
-```
-
-----------------------------------------
-
-TITLE: Loading Sensitive Data from Files in Docker Compose
-DESCRIPTION: This YAML snippet illustrates how to configure n8n to load sensitive data, such as credentials or database settings, from separate files using the `_FILE` suffix for environment variables in Docker Compose. This method enhances security by avoiding direct exposure of sensitive values.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/configuration/configuration-methods.md#_snippet_7
-
-LANGUAGE: yaml
-CODE:
-```
-CREDENTIALS_OVERWRITE_DATA_FILE=/path/to/credentials_data
-DB_TYPE_FILE=/path/to/db_type
-DB_POSTGRESDB_DATABASE_FILE=/path/to/database_name
-DB_POSTGRESDB_HOST_FILE=/path/to/database_host
-DB_POSTGRESDB_PORT_FILE=/path/to/database_port
-DB_POSTGRESDB_USER_FILE=/path/to/database_user
-DB_POSTGRESDB_PASSWORD_FILE=/path/to/database_password
-DB_POSTGRESDB_SCHEMA_FILE=/path/to/database_schema
-DB_POSTGRESDB_SSL_CA_FILE=/path/to/ssl_ca
-DB_POSTGRESDB_SSL_CERT_FILE=/path/to/ssl_cert
-DB_POSTGRESDB_SSL_KEY_FILE=/path/to/ssl_key
-DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED_FILE=/path/to/ssl_reject_unauth
-```
-
-----------------------------------------
-
-TITLE: Extracting Nested Data Fields in n8n (JavaScript)
-DESCRIPTION: This snippet iterates through incoming items and extracts specific nested fields, 'personal_info.first_name' and 'work_info.job_title', from each item's JSON payload. It returns a new array of items, each containing only these two extracted fields. This is useful for flattening or selecting specific data points from complex nested structures.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/ai-code.md#_snippet_3
-
-LANGUAGE: JavaScript
-CODE:
-```
-const items = $input.all();
-const newItems = items.map((item) => {
-  const firstName = item.json.personal_info.first_name;
-  const jobTitle = item.json.work_info.job_title;
-  return {
-    json: {
-      firstName,
-      jobTitle,
-    },
-  };
-});
-return newItems;
-```
-
-----------------------------------------
-
-TITLE: Starting Docker Compose Services (Bash)
-DESCRIPTION: This command initiates the Docker Compose services defined in the `compose.yaml` file. The `-d` flag runs the containers in detached mode, allowing them to run in the background without blocking the terminal.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/docker-compose.md#_snippet_9
-
-LANGUAGE: bash
-CODE:
-```
-sudo docker compose up -d
-```
-
-----------------------------------------
-
-TITLE: Granting Restricted Access to AWS Secrets Manager for n8n (JSON)
-DESCRIPTION: This IAM policy provides restricted access to AWS Secrets Manager, allowing n8n to list and batch retrieve all secrets, but limits the `secretsmanager:GetSecretValue` and `secretsmanager:DescribeSecret` permissions to specific Amazon Resource Names (ARNs). In this example, access is granted only to secrets whose ARNs start with `arn:aws:secretsmanager:us-west-2:123456789000:secret:n8n*`, ensuring n8n can only retrieve values for designated secrets.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/external-secrets.md#_snippet_1
-
-LANGUAGE: JSON
-CODE:
-```
-{
-	"Version": "2012-10-17",
-	"Statement": [
-		{
-			"Sid": "ListingSecrets",
-			"Effect": "Allow",
-			"Action": [
-				"secretsmanager:ListSecrets",
-				"secretsmanager:BatchGetSecretValue"
-			],
-			"Resource": "*"
-		},
-		{
-			"Sid": "RetrievingSecrets",
-			"Effect": "Allow",
-			"Action": [
-				"secretsmanager:GetSecretValue",
-				"secretsmanager:DescribeSecret"
-			],
-			"Resource": [
-				"arn:aws:secretsmanager:us-west-2:123456789000:secret:n8n*"
-			]
-		}
-	]
-}
-```
-
-----------------------------------------
-
-TITLE: Creating an Array of Contact Objects in n8n Code Node (JavaScript)
-DESCRIPTION: This snippet demonstrates how to initialize an array of contact objects (`myContacts`) within an n8n Code node. Each object contains a `name` and a nested `email` object with `personal` and `work` email addresses, showcasing how to structure complex JSON data for output.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-1.md#_snippet_3
-
-LANGUAGE: JavaScript
-CODE:
-```
-var myContacts = [
-	{
-		json: {
-			name: 'Alice',
-			email: {
-				personal: 'alice@home.com',
-				work: 'alice@wonderland.org'
-			},
-		}
-	},
-	{
-		json: {
-			name: 'Bob',
-			email: {
-				personal: 'bob@mail.com',
-				work: 'contact@thebuilder.com'
-				},
-		}
-	},
-];
-
-return myContacts;
-```
-
-----------------------------------------
-
-TITLE: Creating a Customer Message using n8n Expressions
-DESCRIPTION: This expression dynamically generates a personalized message for each customer by embedding their name and description. It relies on data previously processed and made available in the workflow's JSON context, specifically the 'customer_name' and 'customer_description' fields from an upstream node like 'Edit Fields1'. The output is a formatted string ready for use in a messaging node.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/try-it-out/quickstart.md#_snippet_0
-
-LANGUAGE: n8n Expression
-CODE:
-```
-Hi {{ $json.customer_name }}. Your description is: {{ $json.customer_description }}
-```
-
-----------------------------------------
-
-TITLE: Configuring Node Description Properties (TypeScript)
-DESCRIPTION: This TypeScript snippet adds essential configuration properties to the node's `description` object. It defines the node's display name, internal name, icon path, group, version, dynamic subtitle, general description, default name, input/output types, required credentials, and default request settings including the base URL and headers for API calls.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/declarative-style-node.md#_snippet_4
-
-LANGUAGE: typescript
-CODE:
-```
-displayName: 'NASA Pics',
-name: 'NasaPics',
-icon: 'file:nasapics.svg',
-group: ['transform'],
-version: 1,
-subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-description: 'Get data from NASAs API',
-defaults: {
-	name: 'NASA Pics',
-},
-inputs: ['main'],
-outputs: ['main'],
-credentials: [
-	{
-		name: 'NasaPicsApi',
-		required: true,
-	},
-],
-requestDefaults: {
-	baseURL: 'https://api.nasa.gov',
-	headers: {
-		Accept: 'application/json',
-		'Content-Type': 'application/json',
-	},
-},
-```
-
-----------------------------------------
-
-TITLE: Aggregating Multiple Items into a Single Item in n8n Code Node (JavaScript)
-DESCRIPTION: This JavaScript snippet illustrates how to consolidate multiple incoming n8n items into a single output item. It collects the `json` payload of all input items into an array and assigns it to a new `data_object` property within a single output item.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-1.md#_snippet_6
-
-LANGUAGE: JavaScript
-CODE:
-```
-return [
-	{
-    	json: {
-    		data_object: $input.all().map(item => item.json)
-    	}
-    }
-  ];
-```
-
-----------------------------------------
-
-TITLE: Perform JMESPath Search with _jmespath() in Python
-DESCRIPTION: The `_jmespath()` method provides n8n users with the capability to perform JMESPath searches on JSON objects when writing Python code. This method is accessible within the n8n Code node, facilitating advanced data manipulation and querying.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/builtin/jmespath.md#_snippet_1
-
-LANGUAGE: Python
-CODE:
-```
-_jmespath()
 ```
 
 ----------------------------------------
@@ -1078,28 +205,803 @@ CODE:
 
 ----------------------------------------
 
-TITLE: Applying All Kubernetes Manifests (Shell)
-DESCRIPTION: This shell command uses `kubectl apply -f .` to send all Kubernetes manifest files in the current directory to the cluster. This command is used to create or update the defined resources, such as deployments, services, and volumes, within the Kubernetes environment.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/google-cloud.md#_snippet_5
+TITLE: Starting n8n with Docker (SQLite)
+DESCRIPTION: This command initializes a Docker volume for persistent data, downloads the n8n image, and starts the container, exposing it on port 5678. It mounts the n8n_data volume to /home/node/.n8n to ensure data persistence across restarts.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/docker.md#_snippet_0
 
-LANGUAGE: shell
+LANGUAGE: sh
 CODE:
 ```
-kubectl apply -f .
+docker volume create n8n_data
+
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
 ```
 
 ----------------------------------------
 
-TITLE: Automating N8N Source Control Pull with cURL
-DESCRIPTION: This cURL command automates the process of pulling source control changes into an n8n instance. It sends a POST request to the /api/v1/source-control/pull endpoint, typically after a Git merge, to synchronize workflows. The force: true data parameter ensures that the pull operation proceeds even if there are local uncommitted changes, making it suitable for CI/CD environments.
-SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/source-control-environments/using/copy-work.md#_snippet_0
+TITLE: Merging Data with Custom SQL Query in n8n
+DESCRIPTION: This SQL query demonstrates how to merge data from two previous nodes (input1 and input2) using a LEFT JOIN operation based on matching 'name' and 'id' fields. Data from previous n8n nodes are accessible as tables named input1, input2, etc., according to their order in the workflow. This allows for complex custom merge logic.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.merge.md#_snippet_0
 
-LANGUAGE: curl
+LANGUAGE: sql
 CODE:
 ```
-curl --request POST \
-	--location '<YOUR-INSTANCE-URL>/api/v1/source-control/pull' \
-	--header 'Content-Type: application/json' \
-	--header 'X-N8N-API-KEY: <YOUR-API-KEY>' \
-	--data '{"force": true}'
+SELECT * FROM input1 LEFT JOIN input2 ON input1.name = input2.id
+```
+
+----------------------------------------
+
+TITLE: Making HTTP Requests with n8n Helpers (TypeScript)
+DESCRIPTION: This snippet demonstrates how to make HTTP requests within an n8n node's `execute` function using the built-in helpers. It shows two primary methods: `httpRequest` for requests without authentication and `httpRequestWithAuthentication` for requests requiring credentials, where `credentialTypeName` specifies the type of credential to use. Both methods accept an `options` object to configure the request.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/http-helpers.md#_snippet_0
+
+LANGUAGE: TypeScript
+CODE:
+```
+// If no auth needed
+const response = await this.helpers.httpRequest(options);
+
+// If auth needed
+const response = await this.helpers.httpRequestWithAuthentication.call(
+	this, 
+	'credentialTypeName', // For example: pipedriveApi
+	options,
+);
+```
+
+----------------------------------------
+
+TITLE: Using Nullish Coalescing Operator for Default Values in n8n
+DESCRIPTION: This snippet illustrates the use of the nullish coalescing operator (??) in an n8n expression. It provides a concise way to assign a 'default value' if the variable `$x` is strictly `null` or `undefined`. If `$x` has any other value (including `false` or `0`), that value is used instead.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/expressions/check-incoming-data.md#_snippet_1
+
+LANGUAGE: JavaScript
+CODE:
+```
+{{ $x ?? "default value" }}
+```
+
+----------------------------------------
+
+TITLE: Checking Node Execution Status in n8n (JavaScript)
+DESCRIPTION: This JavaScript snippet allows you to programmatically check if a specific n8n node has been executed within a workflow. It's useful for conditional logic to ensure a node has produced output before attempting to reference its values, preventing 'Referenced node is unexecuted' errors. Replace '<node-name>' with the actual name of the node you want to check.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/_snippets/integrations/referenced-node-unexecuted.md#_snippet_0
+
+LANGUAGE: JavaScript
+CODE:
+```
+$("<node-name>").isExecuted
+```
+
+----------------------------------------
+
+TITLE: Parameterized SELECT Query for MySQL - SQL
+DESCRIPTION: This SQL snippet demonstrates a parameterized SELECT query designed for use with n8n's MySQL node. It uses `$1:name` for a dynamic table name and `$2` for a dynamic email value, allowing for safe and flexible data retrieval while preventing SQL injection.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/app-nodes/n8n-nodes-base.mysql/index.md#_snippet_1
+
+LANGUAGE: sql
+CODE:
+```
+SELECT * FROM $1:name WHERE email = $2;
+```
+
+----------------------------------------
+
+TITLE: Checking Node Execution Status in n8n JavaScript
+DESCRIPTION: This JavaScript expression checks if a specific n8n node has been executed. It's useful for conditional logic to prevent errors when referencing unexecuted nodes, ensuring data availability before attempting to use it.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/expressions/common-issues.md#_snippet_0
+
+LANGUAGE: JavaScript
+CODE:
+```
+$("<node-name>").isExecuted
+```
+
+----------------------------------------
+
+TITLE: Invalid Multi-line JavaScript Expression (Luxon)
+DESCRIPTION: This JavaScript snippet illustrates an invalid multi-line expression within n8n, even when formatted as a single line. n8n expressions are limited to a single line of JavaScript, preventing the use of functions, variable assignments, or multiple standalone operations directly within the `{{...}}` block. It attempts to calculate the difference between two dates using Luxon.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/expressions.md#_snippet_3
+
+LANGUAGE: JavaScript
+CODE:
+```
+{{
+  function example() {
+    let end = DateTime.fromISO('2017-03-13');
+    let start = DateTime.fromISO('2017-02-13');
+    let diffInMonths = end.diff(start, 'months');
+    return diffInMonths.toObject();
+  }
+  example();
+}}
+```
+
+----------------------------------------
+
+TITLE: n8n Workflow: Date Transformation and Conditional Processing
+DESCRIPTION: This n8n workflow automates date processing. It fetches customer data, rounds the 'created' date to the end of the month, checks if the rounded date is after January 1, 1960, waits for one minute if the condition is true, and finally sets the calculated date as 'outputValue'. The workflow is configured to trigger every 30 minutes and includes a manual trigger for testing.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-2.md#_snippet_4
+
+LANGUAGE: n8n Workflow JSON
+CODE:
+```
+{
+	"name": "Course 2, Ch 2, Date exercise",
+	"nodes": [
+		{
+		"parameters": {},
+		"id": "6bf64d5c-4b00-43cf-8439-3cbf5e5f203b",
+		"name": "When clicking \"Execute workflow\"",
+		"type": "n8n-nodes-base.manualTrigger",
+		"typeVersion": 1,
+		"position": [
+			620,
+			280
+		]
+		},
+		{
+		"parameters": {
+			"operation": "getAllPeople",
+			"returnAll": true
+		},
+		"id": "a08a8157-99ee-4d50-8fe4-b6d7e16e858e",
+		"name": "Customer Datastore (n8n training)",
+		"type": "n8n-nodes-base.n8nTrainingCustomerDatastore",
+		"typeVersion": 1,
+		"position": [
+			840,
+			360
+		]
+		},
+		{
+		"parameters": {
+			"operation": "roundDate",
+			"date": "={{ $json.created }}",
+			"mode": "roundUp",
+			"outputFieldName": "new-date",
+			"options": {
+			"includeInputFields": true
+			}
+		},
+		"id": "f66a4356-2584-44b6-a4e9-1e3b5de53e71",
+		"name": "Date & Time",
+		"type": "n8n-nodes-base.dateTime",
+		"typeVersion": 2,
+		"position": [
+			1080,
+			360
+		]
+		},
+		{
+		"parameters": {
+			"conditions": {
+			"options": {
+				"caseSensitive": true,
+				"leftValue": "",
+				"typeValidation": "strict"
+			},
+			"conditions": [
+				{
+				"id": "7c82823a-e603-4166-8866-493f643ba354",
+				"leftValue": "={{ $json['new-date'] }}",
+				"rightValue": "1960-01-01T00:00:00",
+				"operator": {
+					"type": "dateTime",
+					"operation": "after"
+				}
+				}
+			],
+			"combinator": "and"
+			},
+			"options": {}
+		},
+		"id": "cea39877-6183-4ea0-9400-e80523636912",
+		"name": "If"
+```
+
+----------------------------------------
+
+TITLE: Granting Required Permissions for n8n PostgresDB User (SQL)
+DESCRIPTION: This SQL snippet provides the necessary commands to set up a new database and user for n8n in PostgresDB. It creates a dedicated database, defines a new user with a specified password, and grants all privileges on the newly created database to that user, ensuring n8n has the required access to manage its schemas.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/configuration/supported-databases-settings.md#_snippet_1
+
+LANGUAGE: sql
+CODE:
+```
+CREATE DATABASE n8n-db;
+CREATE USER n8n-user WITH PASSWORD 'random-password';
+GRANT ALL PRIVILEGES ON DATABASE n8n-db TO n8n-user;
+```
+
+----------------------------------------
+
+TITLE: Configuring n8n and Traefik with Docker Compose (YAML)
+DESCRIPTION: This Docker Compose configuration defines two services: `traefik` for reverse proxying and SSL/TLS management, and `n8n` for the workflow automation platform. It sets up port mappings, persistent volumes for data and certificates, and environment variables for n8n, while Traefik is configured to use Docker as a provider and handle ACME challenges for SSL certificates.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/installation/server-setups/docker-compose.md#_snippet_8
+
+LANGUAGE: yaml
+CODE:
+```
+services:
+  traefik:
+    image: "traefik"
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.routers.n8n.entrypoints=web,websecure
+      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
+      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
+      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
+      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
+      - traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.n8n.headers.STSPreload=true
+      - traefik.http.routers.n8n.middlewares=n8n@docker
+    environment:
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./local-files:/files
+
+volumes:
+  n8n_data:
+  traefik_data:
+```
+
+----------------------------------------
+
+TITLE: Configuring n8n Logging with Environment Variables - Bash
+DESCRIPTION: This snippet demonstrates how to configure n8n's logging behavior using environment variables. It covers setting the log level to 'debug', directing output to both console and a file, specifying the log file location, and defining maximum file size and count for log rotation. These variables control the verbosity and storage of n8n logs.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/logging-monitoring/logging.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+# Set the logging level to 'debug'
+export N8N_LOG_LEVEL=debug
+
+# Set log output to both console and a log file
+export N8N_LOG_OUTPUT=console,file
+
+# Set a save location for the log file
+export N8N_LOG_FILE_LOCATION=/home/jim/n8n/logs/n8n.log
+
+# Set a 50 MB maximum size for each log file
+export N8N_LOG_FILE_MAXSIZE=50
+
+# Set 60 as the maximum number of log files to be kept
+export N8N_LOG_FILE_MAXCOUNT=60
+```
+
+----------------------------------------
+
+TITLE: n8n Workflow for Batch RSS Feed Processing (JSON)
+DESCRIPTION: This JSON represents a complete n8n workflow that demonstrates how to read multiple RSS feeds in batches. It includes a Manual Trigger, a Code node to define the RSS feed URLs, a Loop Over Items node to process each URL individually, and an RSS Read node to fetch the content.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-3.md#_snippet_2
+
+LANGUAGE: JSON
+CODE:
+```
+{
+	"meta": {
+		"templateCredsSetupCompleted": true,
+		"instanceId": "cb484ba7b742928a2048bf8829668bed5b5ad9787579adea888f05980292a4a7"
+	},
+	"nodes": [
+		{
+		"parameters": {},
+		"id": "ed8dc090-ae8c-4db6-a93b-0fa873015c25",
+		"name": "When clicking \"Execute workflow\"",
+		"type": "n8n-nodes-base.manualTrigger",
+		"typeVersion": 1,
+		"position": [
+			460,
+			460
+		]
+		},
+		{
+		"parameters": {
+			"jsCode": "let urls = [\n  {\n    json: {\n      url: 'https://medium.com/feed/n8n-io'\n    }\n  },\n  {\n   json: {\n     url: 'https://dev.to/feed/n8n'\n   } \n  }\n]\n\nreturn urls;"
+		},
+		"id": "1df2a9bf-f970-4e04-b906-92dbbc9e8d3a",
+		"name": "Code",
+		"type": "n8n-nodes-base.code",
+		"typeVersion": 2,
+		"position": [
+			680,
+			460
+		]
+		},
+		{
+		"parameters": {
+			"options": {}
+		},
+		"id": "3cce249a-0eab-42e2-90e3-dbdf3684e012",
+		"name": "Loop Over Items",
+		"type": "n8n-nodes-base.splitInBatches",
+		"typeVersion": 3,
+		"position": [
+			900,
+			460
+		]
+		},
+		{
+		"parameters": {
+			"url": "={{ $json.url }}",
+			"options": {}
+		},
+		"id": "50e1c1dc-9a5d-42d3-b7c0-accc31636aa6",
+		"name": "RSS Read",
+		"type": "n8n-nodes-base.rssFeedRead",
+		"typeVersion": 1,
+		"position": [
+			1120,
+			460
+		]
+		}
+	],
+	"connections": {
+		"When clicking \"Execute workflow\"": {
+		"main": [
+			[
+			{
+				"node": "Code",
+				"type": "main",
+				"index": 0
+			}
+			]
+		]
+		},
+		"Code": {
+		"main": [
+			[
+			{
+				"node": "Loop Over Items",
+				"type": "main",
+				"index": 0
+			}
+			]
+		]
+		},
+		"Loop Over Items": {
+		"main": [
+			null,
+			[
+			{
+				"node": "RSS Read",
+				"type": "main",
+				"index": 0
+			}
+			]
+		]
+		},
+		"RSS Read": {
+		"main": [
+			[
+			{
+				"node": "Loop Over Items",
+				"type": "main",
+				"index": 0
+			}
+			]
+		]
+		}
+	},
+	"pinData": {}
+}
+```
+
+----------------------------------------
+
+TITLE: Outline Structure for a Programmatic-style n8n Node (JavaScript)
+DESCRIPTION: This snippet illustrates the fundamental class structure for a programmatic-style n8n node. It imports `IExecuteFunctions` from `n8n-core` and `INodeExecutionData`, `INodeType`, `INodeTypeDescription` from `n8n-workflow`. In addition to the `description` object, it includes an `async execute()` method, which is responsible for processing incoming data and parameters and returning the results.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/node-base-files/structure.md#_snippet_1
+
+LANGUAGE: JavaScript
+CODE:
+```
+import { IExecuteFunctions } from 'n8n-core';
+import { INodeExecutionData, INodeType, INodeTypeDescription } from 'n8n-workflow';
+
+export class ExampleNode implements INodeType {
+	description: INodeTypeDescription = {
+    // Basic node details here
+    properties: [
+      // Resources and operations here
+    ]
+  };
+
+  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    // Process data and return
+  }
+};
+```
+
+----------------------------------------
+
+TITLE: Creating a Customer Message using n8n Expressions
+DESCRIPTION: This expression dynamically generates a personalized message for each customer by embedding their name and description. It relies on data previously processed and made available in the workflow's JSON context, specifically the 'customer_name' and 'customer_description' fields from an upstream node like 'Edit Fields1'. The output is a formatted string ready for use in a messaging node.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/try-it-out/quickstart.md#_snippet_0
+
+LANGUAGE: n8n Expression
+CODE:
+```
+Hi {{ $json.customer_name }}. Your description is: {{ $json.customer_description }}
+```
+
+----------------------------------------
+
+TITLE: Referencing and Adding Data to Items in n8n Code Node (JavaScript)
+DESCRIPTION: This snippet shows how to access and modify data from previous nodes within an n8n Code node. It retrieves all incoming items, adds a new property `workEmail` to the first item's JSON, and assigns it the value of the existing `email.work` property.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-two/chapter-1.md#_snippet_4
+
+LANGUAGE: JavaScript
+CODE:
+```
+let items = $input.all();
+items[0].json.workEmail = items[0].json.email['work'];
+return items;
+```
+
+----------------------------------------
+
+TITLE: Constructing Discord Message with n8n Expression
+DESCRIPTION: This n8n expression dynamically generates the message content sent to a Discord channel. It retrieves 'totalBooked' and 'bookedSum' values from the workflow's current JSON data and extracts a unique ID from the 'HTTP Request' node's header parameters. This allows for automated, data-rich notifications.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-one/chapter-5/chapter-5.6.md#_snippet_0
+
+LANGUAGE: n8n Expression
+CODE:
+```
+This week we've {{$json["totalBooked"]}} booked orders with a total value of {{$json["bookedSum"]}}. My Unique ID: {{ $('HTTP Request').params["headerParameters"]["parameters"][0]["value"] }}
+```
+
+----------------------------------------
+
+TITLE: Updating Docker Container Permissions for n8n v1.0 (Bash)
+DESCRIPTION: This command updates file permissions within an n8n Docker container, changing ownership from `root` to `node:node` for the `~/.n8n` directory. This is necessary for Docker-based deployments of n8n v1.0, as the n8n process now runs as the `node` user for increased security. Execute this command on the Docker host if permission errors appear in container logs after updating to ensure proper operation.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/1-0-migration-checklist.md#_snippet_0
+
+LANGUAGE: bash
+CODE:
+```
+docker run --rm -it --user root -v ~/.n8n:/home/node/.n8n --entrypoint chown n8nio/base:16 -R node:node /home/node/.n8n
+```
+
+----------------------------------------
+
+TITLE: Using Logical OR Operator for Default Values in n8n
+DESCRIPTION: This snippet shows how to use the logical OR operator (||) in an n8n expression to provide a fallback. If the variable `$x` is a falsy value (e.g., `null`, `undefined`, `false`, `0`, `''`), the 'default value' string is used. Otherwise, the value of `$x` is returned. This is a common pattern for setting defaults.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/expressions/check-incoming-data.md#_snippet_2
+
+LANGUAGE: JavaScript
+CODE:
+```
+{{ $x || "default value" }}
+```
+
+----------------------------------------
+
+TITLE: Referencing Input Parameters in n8n JSON Expression
+DESCRIPTION: This JSON object demonstrates how to reference input parameters using an n8n expression. The `{{ $input.params }}` syntax attempts to access the parameters of the incoming data, which will cause an error if the node is tested without connected input.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/code/cookbook/expressions/common-issues.md#_snippet_1
+
+LANGUAGE: JavaScript
+CODE:
+```
+{
+  "my_field_1": {{ $input.params }}
+}
+```
+
+----------------------------------------
+
+TITLE: Parameterized SELECT Query for Postgres - SQL
+DESCRIPTION: This SQL query demonstrates how to select data from a table using parameterized values. The `$1:name` syntax is used for a table name parameter, and `$2` is used for a column value parameter, preventing SQL injection by sanitizing inputs.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/app-nodes/n8n-nodes-base.postgres/index.md#_snippet_1
+
+LANGUAGE: SQL
+CODE:
+```
+SELECT * FROM $1:name WHERE email = $2;
+```
+
+----------------------------------------
+
+TITLE: GitHub Action to Pull N8n Version Control Changes (YAML)
+DESCRIPTION: This GitHub Action workflow automates pulling version control changes into an n8n instance. It triggers on pushes to the 'production' branch or can be dispatched manually. It uses `curl` to send a POST request to the n8n instance's version control pull endpoint, authenticating with API keys stored as GitHub secrets.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/_snippets/source-control-environments/github-action.md#_snippet_0
+
+LANGUAGE: yaml
+CODE:
+```
+name: CI
+on:
+  # Trigger the workflow on push or pull request events for the "production" branch
+  push:
+    branches: [ "production" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  run-pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PULL
+		# Use GitHub secrets to protect sensitive information
+        run: >
+          curl --location '${{ secrets.INSTANCE_URL }}/version-control/pull' --header
+          'Content-Type: application/json' --header 'X-N8N-API-KEY: ${{ secrets.INSTANCE_API_KEY }}'
+```
+
+----------------------------------------
+
+TITLE: Scheduling Custom Hourly Range with n8n Schedule Trigger (Cron)
+DESCRIPTION: This Cron expression schedules a workflow to run every hour between 9:00 AM and 5:00 PM daily. The `9-17` in the hour field defines the inclusive range for hourly execution.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/index.md#_snippet_8
+
+LANGUAGE: Cron
+CODE:
+```
+0 9-17 * * *
+```
+
+----------------------------------------
+
+TITLE: Understanding n8n Standard Data Structure (JSON)
+DESCRIPTION: This JSON snippet illustrates the standard data structure used by n8n to pass information between nodes. It shows how textual data is stored under the 'json' key and optional binary data under the 'binary' key, including details like mime type and file name. This structure is crucial for interacting with n8n items programmatically.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-one/chapter-5/chapter-5.5.md#_snippet_0
+
+LANGUAGE: json
+CODE:
+```
+[
+    {
+   	 "json": { // (1)!
+   	 	 "apple": "beets",
+   	 	 "carrot": {
+   	 	 	 "dill": 1
+   	 	 }
+   	 },
+   	 "binary": { // (2)!
+   	 	 "apple-picture": { // (3)!
+   	 	 	 "data": "....", // (4)!
+   	 	 	 "mimeType": "image/png", // (5)!
+   	 	 	 "fileExtension": "png", // (6)!
+   	 	 	 "fileName": "example.png", // (7)!
+   	 	 }
+   	 }
+    },
+    ...
+]
+```
+
+----------------------------------------
+
+TITLE: Increasing V8 Old Space Memory for n8n
+DESCRIPTION: To prevent 'JavaScript heap out of memory' errors in self-hosted n8n, this snippet shows how to allocate more memory to the V8 engine's 'old memory' section. This is crucial for workflows processing large or long-lived data. The `SIZE` placeholder should be replaced with the desired memory in megabytes (e.g., 4096 for 4GB).
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/scaling/memory-errors.md#_snippet_0
+
+LANGUAGE: Shell
+CODE:
+```
+NODE_OPTIONS="--max-old-space-size=SIZE" n8n start
+```
+
+----------------------------------------
+
+TITLE: Configuring OpenAI Assistant Instructions
+DESCRIPTION: This snippet provides an example of system instructions for an OpenAI Assistant. It defines the assistant's persona, communication style, and how it should handle user queries, emphasizing a friendly, concise, and supportive tone while avoiding jargon.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/assistant-operations.md#_snippet_1
+
+LANGUAGE: Plain Text
+CODE:
+```
+Always respond in a friendly and engaging manner. When a user asks a question, provide a concise answer first, followed by a brief explanation or additional context if necessary. If the question is open-ended, offer a suggestion or ask a clarifying question to guide the conversation. Keep the tone positive and supportive, and avoid technical jargon unless specifically requested by the user.
+```
+
+----------------------------------------
+
+TITLE: Defining Backend External Hooks in n8n (JavaScript)
+DESCRIPTION: This JavaScript code defines the structure for an n8n backend hook file, exporting an object where keys represent hook categories (e.g., 'frontend', 'workflow') and values are objects containing specific hook names. Each hook name maps to an array of asynchronous functions that are executed when the corresponding event occurs. The example demonstrates modifying OAuth callback URLs and enforcing a limit on active workflows by querying the database.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/embed/configuration.md#_snippet_4
+
+LANGUAGE: JavaScript
+CODE:
+```
+module.exports = {
+    "frontend": {
+        "settings": [
+            async function (settings) {
+                settings.oauthCallbackUrls.oauth1 = 'https://n8n.example.com/oauth1/callback';
+                settings.oauthCallbackUrls.oauth2 = 'https://n8n.example.com/oauth2/callback';
+            }
+        ]
+    },
+    "workflow": {
+        "activate": [
+            async function (workflowData) {
+                const activeWorkflows = await this.dbCollections.Workflow.count({ active: true });
+
+                if (activeWorkflows > 1) {
+                    throw new Error(
+                        'Active workflow limit reached.'
+                    );
+                }
+            }
+        ]
+    }
+}
+```
+
+----------------------------------------
+
+TITLE: Accessing Order Status with n8n Expression
+DESCRIPTION: This expression is used within the n8n If node to dynamically retrieve the `orderStatus` value from the incoming JSON data, typically from a preceding HTTP Request node. It allows the If node to evaluate the status and route the workflow accordingly.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/courses/level-one/chapter-5/chapter-5.3.md#_snippet_0
+
+LANGUAGE: n8n Expression
+CODE:
+```
+{{ $json.orderStatus }}
+```
+
+----------------------------------------
+
+TITLE: Installing Local n8n Node into n8n Instance (Shell)
+DESCRIPTION: This command installs your locally linked custom node into your n8n installation. It must be run from the n8n nodes directory (e.g., `~/.n8n/custom/`) and uses the package name defined in your node's `package.json` to create a symlink to your local node.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/_snippets/integrations/creating-nodes/testing.md#_snippet_2
+
+LANGUAGE: shell
+CODE:
+```
+npm link <node-package-name>
+```
+
+----------------------------------------
+
+TITLE: Extracting Name from Linked Item in Previous Node Output (JavaScript)
+DESCRIPTION: This expression demonstrates how to access a specific property, 'name', from a linked item originating from a previous node's output. It navigates through the linked item's JSON data to retrieve the desired value.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/data/data-mapping/data-mapping-expressions.md#_snippet_2
+
+LANGUAGE: JavaScript
+CODE:
+```
+{{$("<node-name>").item.json.name}}
+```
+
+----------------------------------------
+
+TITLE: Setting Environment Variables via Docker Run Command
+DESCRIPTION: This Docker command demonstrates how to set environment variables using the `-e` flag when running an n8n container. It includes port mapping and disabling templates as an example, ensuring the variable is applied to the container instance.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/configuration/configuration-methods.md#_snippet_1
+
+LANGUAGE: docker
+CODE:
+```
+docker run -it --rm \
+ --name n8n \
+ -p 5678:5678 \
+ -e N8N_TEMPLATES_ENABLED="false" \
+ docker.n8n.io/n8nio/n8n
+```
+
+----------------------------------------
+
+TITLE: Enabling n8n Execution Data Pruning (Docker)
+DESCRIPTION: This snippet demonstrates how to enable and configure automatic data pruning for n8n when running via Docker. It sets environment variables within the `docker run` command to activate pruning and define the maximum age of execution data.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/hosting/scaling/execution-data.md#_snippet_4
+
+LANGUAGE: sh
+CODE:
+```
+# Docker
+docker run -it --rm \
+ --name n8n \
+ -p 5678:5678 \
+ -e EXECUTIONS_DATA_PRUNE=true \
+ -e EXECUTIONS_DATA_MAX_AGE=168 \
+ docker.n8n.io/n8nio/n8n
+```
+
+----------------------------------------
+
+TITLE: Scheduling Every 5 Minutes with n8n Schedule Trigger (Cron)
+DESCRIPTION: This Cron expression schedules a workflow to run every 5 minutes. The `*/5` in the minute field indicates that the workflow will execute every fifth minute of the hour.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/index.md#_snippet_1
+
+LANGUAGE: Cron
+CODE:
+```
+*/5 * * * *
+```
+
+----------------------------------------
+
+TITLE: Constructing Postbin Content Expression in n8n (JavaScript)
+DESCRIPTION: This expression is used within the n8n Postbin node to dynamically generate the content sent to Postbin. It combines a static string with the value of the 'classType' property from the incoming JSON data, retrieved using the '{{$json["classType"]}}' syntax. This allows for customized messages based on the solar flare classification.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/try-it-out/tutorial-first-workflow.md#_snippet_1
+
+LANGUAGE: JavaScript
+CODE:
+```
+There was a solar flare of class {{$json["classType"]}}
+```
+
+----------------------------------------
+
+TITLE: Configuring `loadOptions` for Dynamic Data Loading in JavaScript
+DESCRIPTION: This snippet demonstrates how to use the `loadOptions` object within the `methods` property to dynamically fetch user-specific settings from a service. It defines the `routing` for the API request (URL, method) and specifies `output` processing steps like extracting a `rootProperty`, setting key-value pairs using `setKeyValue`, and sorting the results alphabetically by `name` for GUI rendering.
+SOURCE: https://github.com/n8n-io/n8n-docs/blob/main/docs/integrations/creating-nodes/build/reference/node-base-files/declarative-style-parameters.md#_snippet_0
+
+LANGUAGE: JavaScript
+CODE:
+```
+methods : {
+	loadOptions: {
+		routing: {
+			request: {
+				url: '/webhook/example-option-parameters',
+				method: 'GET',
+			},
+			output: {
+				postReceive: [
+					{
+						// When the returned data is nested under another property
+						// Specify that property key
+						type: 'rootProperty',
+						properties: {
+							property: 'responseData',
+						},
+					},
+					{
+						type: 'setKeyValue',
+						properties: {
+							name: '={{$responseItem.key}} ({{$responseItem.value}})',
+							value: '={{$responseItem.value}}',
+						},
+					},
+					{
+						// If incoming data is an array of objects, sort alphabetically by key
+						type: 'sort',
+						properties: {
+							key: 'name',
+						},
+					},
+				],
+			},
+		},
+	}
+},
 ```
