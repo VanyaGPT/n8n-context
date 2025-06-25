@@ -97,7 +97,6 @@
                   "caseSensitive": true,
                   "typeValidation": "strict"
                 },
-                "combinator": "and",
                 "conditions": [
                   {
                     "id": "e9125f57-129e-4026-86ff-746d40b92b04",
@@ -109,7 +108,8 @@
                     "leftValue": "={{ $json.body.event }}",
                     "rightValue": "ONIMBOTJOINCHAT"
                   }
-                ]
+                ],
+                "combinator": "and"
               },
               "renameOutput": true,
               "outputKey": "ONIMBOTJOINCHAT"
@@ -292,3 +292,9 @@
     "instanceId": "d11bcfe2a6c88adcbd756ad320fe8856e5c92b6b9f8008915132b73c441cad97"
   }
 }
+
+---
+
+[custom context update] {Всегда использовать последние версии нод из документации.} (username: i_van_afanasov, datetime: 2025-06-26T10:16:25)
+
+Всегда использовать последние версии нод из документации.
