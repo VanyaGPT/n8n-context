@@ -343,3 +343,88 @@
   }
 }
 ```
+---
+
+## HowTo
+
+Чтобы показывался второй выход из ноды для ошибки – ВСЕГДА нужно указывать поле `"onError": "continueErrorOutput"` для нод на верхнем уровне json-ноды. В связях 2 выхода указываются через массив – первый элемент – успех, второй - ошибка.  Смотри пример json ниже.
+
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "nocoDbApiToken",
+        "operation": "create",
+        "projectId": "py7tp2nznrh5dc4",
+        "table": "mse8rq955cnpwsd",
+        "dataToSend": "autoMapInputData"
+      },
+      "type": "n8n-nodes-base.nocoDb",
+      "typeVersion": 3,
+      "position": [
+        520,
+        520
+      ],
+      "id": "adde7758-ebee-45cf-9483-3d26fc914771",
+      "name": "NocoDB",
+      "credentials": {
+        "nocoDbApiToken": {
+          "id": "0u8Y46FoI7N4Rp9A",
+          "name": "NocoDB Token account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        740,
+        620
+      ],
+      "id": "2e9d00f6-6466-42c3-885d-8b9dbabdb880",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        740,
+        420
+      ],
+      "id": "2d92ad7e-1f33-4850-a6ad-0d47f07f4a37",
+      "name": "set next request"
+    }
+  ],
+  "connections": {
+    "NocoDB": {
+      "main": [
+        [
+          {
+            "node": "set next request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bc5e6699e44c05f63c9770e2a8f0b97ffbe4901f143cf1ead652d71b004f9bd6"
+  }
+}
+```
