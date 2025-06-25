@@ -298,3 +298,48 @@
 [custom context update] {Всегда использовать последние версии нод из документации.} (username: i_van_afanasov, datetime: 2025-06-26T10:16:25)
 
 Всегда использовать последние версии нод из документации.
+
+---
+
+[custom context update] {Верная ноды set - edit fields} (username: i_van_afanasov, datetime: 2025-06-26T15:16:25)
+
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "639fe452-d282-4ca2-8571-8dbdbe9aaa95",
+              "name": "field",
+              "value": "value",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        1820
+      ],
+      "id": "40f36e6c-938f-4345-9652-16c1c288c984",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "bc5e6699e44c05f63c9770e2a8f0b97ffbe4901f143cf1ead652d71b004f9bd6"
+  }
+}
+```
