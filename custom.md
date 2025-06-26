@@ -1,6 +1,4 @@
----
-
-## n8n Context
+# n8n Context
 
 Сборник полезных инструкций, шаблонов, code-нодов, багфиксов и json-фрагментов для n8n.
 
@@ -425,6 +423,158 @@
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bc5e6699e44c05f63c9770e2a8f0b97ffbe4901f143cf1ead652d71b004f9bd6"
+  }
+}
+```
+
+---
+
+[custom context update] {Всегда Используй Merge-ноду для объединения параллельных потоков данных в n8n} (username: i_van_afanasov, datetime: 2025-06-26T19:58:26)
+
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1340,
+        220
+      ],
+      "id": "7fefd7e6-a793-41d2-8873-95f0da580c9f",
+      "name": "Merge1"
+    }
+  ],
+  "connections": {
+    "Merge1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d11bcfe2a6c88adcbd756ad320fe8856e5c92b6b9f8008915132b73c441cad97"
+  }
+}
+
+```
+
+Примеры связей:
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1060,
+        -100
+      ],
+      "id": "24fed7a8-f10b-45d6-820f-255bae517afc",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5b9d7c5-428f-4bbb-b404-7fdba9ec4343",
+              "name": "userMessage",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "9ea74de1-0b22-4b63-8567-e05d689dfbf3",
+              "name": "chatId",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "87b74afb-421f-4f0d-afd1-7d506b30e5c6",
+              "name": "from",
+              "value": "={{ $json.message.from.id }}",
+              "type": "string"
+            },
+            {
+              "id": "8dcc0279-1b13-4449-907d-d7a3a7c225ae",
+              "name": "userName",
+              "value": "={{ $json.message.from.username }}",
+              "type": "string"
+            },
+            {
+              "id": "6df07e1e-78f8-453b-9861-dd48c46c9209",
+              "name": "message_id",
+              "value": "={{ $json.message.message_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -580,
+        460
+      ],
+      "id": "6b1c4565-97b3-44f8-8a0a-50265d7f12e1",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1340,
+        220
+      ],
+      "id": "7fefd7e6-a793-41d2-8873-95f0da580c9f",
+      "name": "Merge1"
+    }
+  ],
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        []
+      ]
+    },
+    "Merge1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d11bcfe2a6c88adcbd756ad320fe8856e5c92b6b9f8008915132b73c441cad97"
   }
 }
 ```
