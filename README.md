@@ -8,16 +8,15 @@
 
 ### Файлы и структура
 
-* [`custom.md`](https://github.com/VanyaGPT/n8n-context/blob/main/custom.md) — свежие инструкции, которые пользователи присылают через бота [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot)
-* [`base.md`](https://github.com/VanyaGPT/n8n-context/blob/main/base.md) — базовый системный промпт для пошаговой генерации json-флоу
-* [`examples/`](https://github.com/VanyaGPT/n8n-context/tree/main/examples) — примеры json-флоу, реальные и синтетические
-* [`context7-source.md`](https://github.com/VanyaGPT/n8n-context/blob/main/context7-source.md) — импортированный контекст из [context7](https://context7.com/n8n-io/n8n-docs?tokens=87961), обновляется регулярно автоматически
+* [`prompts/`](https://github.com/VanyaGPT/n8n-context/tree/main/prompts) — основные промпты и инструкции
+* [`workflows/`](https://github.com/VanyaGPT/n8n-context/tree/main/workflows) — примеры json-флоу, реальные и синтетические
+* [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets) — полезные фрагменты кода и конфигураций
 
 ---
 
 ### Бот [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot)
 
-* присланные инструкции попадают в [`custom.md`](https://github.com/VanyaGPT/n8n-context/blob/main/custom.md) 
+* присланные инструкции попадают в соответствующие папки
 * бот проверяет, что такого промпта или примера еще не было
 * если инструкция уже есть — скажет сразу
 
@@ -33,19 +32,18 @@ A repository for storing valid instructions/prompts that help neural networks as
 
 ### Files and structure
 
-* [`custom.md`](https://github.com/VanyaGPT/n8n-context/blob/main/custom.md) — latest instructions submitted by users through the [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot) bot
-* [`base.md`](https://github.com/VanyaGPT/n8n-context/blob/main/base.md) — the base system prompt for step-by-step JSON flow generation
-* [`examples/`](https://github.com/VanyaGPT/n8n-context/tree/main/examples) — real and synthetic JSON flow examples
-* [`context7-source.md`](https://github.com/VanyaGPT/n8n-context/blob/main/context7-source.md) — imported context from [context7](https://context7.com/n8n-io/n8n-docs?tokens=87961), updated automatically and regularly
+* [`prompts/`](https://github.com/VanyaGPT/n8n-context/tree/main/prompts) — main prompts and instructions
+* [`workflows/`](https://github.com/VanyaGPT/n8n-context/tree/main/workflows) — real and synthetic JSON flow examples
+* [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets) — useful code snippets and configurations
 
 ---
 
 ### Bot [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot)
 
-* all submitted instructions go into [`custom.md`](https://github.com/VanyaGPT/n8n-context/blob/main/custom.md)
+* all submitted instructions go into corresponding folders
 * the bot checks that there are no duplicate prompts or examples
 * if your instruction already exists, the bot will tell you
 
-alternatively: you can submit a pull request directly if you don’t want to use the bot or need a more complex format than plain text.
+alternatively: you can submit a pull request directly if you don't want to use the bot or need a more complex format than plain text.
 
 ---

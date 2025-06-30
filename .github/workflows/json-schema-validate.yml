@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - 'workflows/**/*.json'
-      - '.github/schemas/workflow.schema.json'
+      - '../../schemas/workflow.schema.json'
   pull_request:
     paths:
       - 'workflows/**/*.json'
-      - '.github/schemas/workflow.schema.json'
+      - '../../schemas/workflow.schema.json'
 
 jobs:
   validate:
