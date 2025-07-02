@@ -8,9 +8,9 @@
 
 ### Файлы и структура
 
-* [`prompts/`](https://github.com/VanyaGPT/n8n-context/tree/main/prompts) — основные промпты и инструкции
+* [`context/`](https://github.com/VanyaGPT/n8n-context/tree/main/context) — базовые знания и правила работы с n8n
 * [`workflows/`](https://github.com/VanyaGPT/n8n-context/tree/main/workflows) — примеры json-флоу, реальные и синтетические
-* [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets) — полезные фрагменты кода и конфигураций
+* [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets) — JSON примеры для конкретных типов нод
 
 ---
 
