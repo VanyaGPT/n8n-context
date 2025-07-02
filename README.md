@@ -2,13 +2,13 @@
 
 ## О проекте / About the Project
 
-### 🇷🇺 n8n-context — Коллекция инструкций для [n8n](https://n8n.io)
+### n8n-context — Коллекция инструкций для [n8n](https://n8n.io)
 
 **Репозиторий для хранения валидных инструкций/промптов, которые помогают нейросетям собирать актуальные json-флоу под n8n.**
 
 n8n — это платформа автоматизации workflow с node-based интерфейсом, позволяющая создавать автоматизированные процессы без программирования. Этот репозиторий содержит материалы, которые помогают AI моделям генерировать корректные n8n конфигурации.
 
-### 🇬🇧 n8n-context — Collection of instructions for [n8n](https://n8n.io)
+### n8n-context — Collection of instructions for [n8n](https://n8n.io)
 
 **A repository for storing valid instructions/prompts that help neural networks assemble up-to-date JSON flows for n8n.**
 
@@ -20,13 +20,13 @@ n8n is a workflow automation platform with a node-based interface that allows cr
 
 ### [`context/`](https://github.com/VanyaGPT/n8n-context/tree/main/context)
 
-**🇷🇺** Базовые знания и правила работы с n8n. Содержит промпты и инструкции для AI моделей:
+Базовые знания и правила работы с n8n. Содержит промпты и инструкции для AI моделей:
 - `base-prompt.md` — основной промпт с описанием n8n, типов нод и структуры JSON
 - `arch-patterns.md` — архитектурные паттерны для построения workflow
 - `step-by-step.md` — пошаговые инструкции по созданию workflow
 - `context7.md` — дополнительный контекст для работы с n8n
 
-**🇬🇧** Basic knowledge and rules for working with n8n. Contains prompts and instructions for AI models:
+Basic knowledge and rules for working with n8n. Contains prompts and instructions for AI models:
 - `base-prompt.md` — main prompt with description of n8n, node types, and JSON structure
 - `arch-patterns.md` — architectural patterns for building workflows
 - `step-by-step.md` — step-by-step instructions for creating workflows
@@ -34,25 +34,25 @@ n8n is a workflow automation platform with a node-based interface that allows cr
 
 ### [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets)
 
-**🇷🇺** JSON примеры для конкретных типов нод. Включает примеры для:
+JSON примеры для конкретных типов нод. Включает примеры для:
 - Switch, Merge, AI Agent, HTTP Request, Webhook
 - Telegram, Code, Set Fields, Error Handling, Schedule
 - И других типов нод
 
-**🇬🇧** JSON examples for specific node types. Includes examples for:
+JSON examples for specific node types. Includes examples for:
 - Switch, Merge, AI Agent, HTTP Request, Webhook
 - Telegram, Code, Set Fields, Error Handling, Schedule
 - And other node types
 
 ### [`workflows/`](https://github.com/VanyaGPT/n8n-context/tree/main/workflows)
 
-**🇷🇺** Примеры полных json-флоу, реальные и синтетические. Содержит готовые workflow для импорта в n8n, охватывающие различные сценарии использования:
+Примеры полных json-флоу, реальные и синтетические. Содержит готовые workflow для импорта в n8n, охватывающие различные сценарии использования:
 - AI агенты для чата и анализа данных
 - Автоматизация HR процессов
 - Интеграции с Telegram, Email, базами данных
 - И многие другие примеры
 
-**🇬🇧** Examples of complete JSON flows, both real and synthetic. Contains ready-made workflows for import into n8n, covering various use cases:
+Examples of complete JSON flows, both real and synthetic. Contains ready-made workflows for import into n8n, covering various use cases:
 - AI agents for chat and data analysis
 - HR process automation
 - Integrations with Telegram, Email, databases
@@ -60,10 +60,10 @@ n8n is a workflow automation platform with a node-based interface that allows cr
 
 ### [`tools/`](https://github.com/VanyaGPT/n8n-context/tree/main/tools)
 
-**🇷🇺** Инструменты для работы с репозиторием:
+Инструменты для работы с репозиторием:
 - `context-builder.js` — утилита для построения контекста
 
-**🇬🇧** Tools for working with the repository:
+Tools for working with the repository:
 - `context-builder.js` — utility for building context
 
 ---
