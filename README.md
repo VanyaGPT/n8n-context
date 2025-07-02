@@ -106,18 +106,18 @@ Tools for working with the repository:
 
 ### Бот [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot)
 
-**🇷🇺**
 * Присланные инструкции попадают в соответствующие папки
 * Бот проверяет, что такого промпта или примера еще не было
 * Если инструкция уже есть — скажет сразу
 
-**🇬🇧**
+Альтернативно: можно прислать pull request напрямую, если не хочется использовать бота или нужен формат сложнее, чем текст.
+
+_
+
 * All submitted instructions go into corresponding folders
 * The bot checks that there are no duplicate prompts or examples
 * If your instruction already exists, the bot will tell you
 
-**🇷🇺** Альтернативно: можно прислать pull request напрямую, если не хочется использовать бота или нужен формат сложнее, чем текст.
-
-**🇬🇧** Alternatively: you can submit a pull request directly if you don't want to use the bot or need a more complex format than plain text.
+Alternatively: you can submit a pull request directly if you don't want to use the bot or need a more complex format than plain text.
 
 ---
