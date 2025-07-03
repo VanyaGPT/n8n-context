@@ -1,8 +1,8 @@
 # Telegram Nodes
 
-Работа с Telegram Bot API.
+Working with Telegram Bot API.
 
-### Пример 1: Telegram Trigger
+### Example 1: Telegram Trigger
 ```json
 {
   "parameters": {},
@@ -18,7 +18,7 @@
 ```
 
 
-### Пример 2: Send Message
+### Example 2: Send Message
 ```json
 {
   "parameters": {

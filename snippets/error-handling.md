@@ -1,8 +1,8 @@
 # Error Handling
 
-Примеры обработки ошибок в n8n.
+Examples of error handling in n8n.
 
-### Пример 1: Обработка ошибок с continueErrorOutput
+### Example 1: Error Handling with continueErrorOutput
 ```json
 {
   "parameters": {
@@ -15,7 +15,7 @@
 }
 ```
 
-### Пример 2: Полная структура с обработкой ошибок
+### Example 2: Complete Structure with Error Handling
 ```json
 {
   "nodes": [

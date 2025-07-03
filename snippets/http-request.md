@@ -1,8 +1,8 @@
 # HTTP Request Node
 
-Примеры для работы с внешними API.
+Examples for working with external APIs.
 
-### Пример 1: GET запрос
+### Example 1: GET Request
 ```json
 {
   "parameters": {
@@ -16,7 +16,7 @@
 }
 ```
 
-### Пример 2: POST запрос с JSON данными
+### Example 2: POST Request with JSON Data
 ```json
 {
   "parameters": {
@@ -52,7 +52,7 @@
 }
 ```
 
-### Пример 3: API с авторизацией
+### Example 3: API with Authorization
 ```json
 {
   "parameters": {

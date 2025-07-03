@@ -1,8 +1,8 @@
 # Set/Edit Fields Node
 
-Трансформация данных и создание новых полей.
+Data transformation and creating new fields.
 
-### Пример 1: Основной пример
+### Example 1: Basic Example
 ```json
 {
   "parameters": {
@@ -35,7 +35,7 @@
 }
 ```
 
-### Пример 2: Извлечение данных из Telegram
+### Example 2: Extracting Data from Telegram
 ```json
 {
   "parameters": {
@@ -74,7 +74,7 @@
 }
 ```
 
-### Пример 3: JSON преобразование
+### Example 3: JSON Transformation
 ```json
 {
   "parameters": {

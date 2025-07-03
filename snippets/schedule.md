@@ -1,8 +1,8 @@
 # Schedule Trigger Node
 
-Запуск workflow по расписанию.
+Running workflows on schedule.
 
-### Пример 1: Ежедневный запуск
+### Example 1: Daily Run
 ```json
 {
   "parameters": {
@@ -21,7 +21,7 @@
 }
 ```
 
-### Пример 2: Запуск по cron-выражению
+### Example 2: Run by Cron Expression
 ```json
 {
   "parameters": {
@@ -39,7 +39,7 @@
 }
 ```
 
-### Пример 3: Запуск каждый час
+### Example 3: Run Every Hour
 ```json
 {
   "parameters": {
@@ -58,7 +58,7 @@
 }
 ```
 
-### Пример 4: Запуск в определенные дни недели
+### Example 4: Run on Specific Days of the Week
 ```json
 {
   "parameters": {

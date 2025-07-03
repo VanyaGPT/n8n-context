@@ -1,8 +1,8 @@
 # Webhook Node
 
-Работа с HTTP запросами.
+Working with HTTP requests.
 
-### Пример 1: Базовый Webhook
+### Example 1: Basic Webhook
 ```json
 {
   "parameters": {
@@ -15,7 +15,7 @@
 }
 ```
 
-### Пример 2: Webhook с авторизацией
+### Example 2: Webhook with Authorization
 ```json
 {
   "parameters": {
@@ -35,7 +35,7 @@
 }
 ```
 
-### Пример 3: Respond to Webhook
+### Example 3: Respond to Webhook
 ```json
 {
   "parameters": {
@@ -49,7 +49,7 @@
 }
 ```
 
-### Пример 4: Webhook с парсингом JSON
+### Example 4: Webhook with JSON Parsing
 ```json
 {
   "parameters": {

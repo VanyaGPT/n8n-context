@@ -1,15 +1,15 @@
 # AI Agent
 
-Настройки AI агентов и их компонентов.
+AI agent settings and their components.
 
-### Пример 1: Базовый AI Agent
+### Example 1: Basic AI Agent
 ```json
 {
   "parameters": {
     "promptType": "define",
     "text": "={{ $json.userMessage }}",
     "options": {
-      "systemMessage": "Ты полезный помощник."
+      "systemMessage": "You are a helpful assistant."
     }
   },
   "type": "@n8n/n8n-nodes-langchain.agent",
@@ -18,7 +18,7 @@
 ```
 
 
-### Пример 2: OpenAI Chat Model
+### Example 2: OpenAI Chat Model
 ```json
 {
   "parameters": {
@@ -40,7 +40,7 @@
 ```
 
 
-### Пример 3: Redis Chat Memory
+### Example 3: Redis Chat Memory
 ```json
 {
   "parameters": {
@@ -60,7 +60,7 @@
 ```
 
 
-### Пример 4: Connections для AI компонентов
+### Example 4: Connections for AI Components
 ```json
 {
   "connections": {

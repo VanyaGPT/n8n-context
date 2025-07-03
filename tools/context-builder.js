@@ -10,20 +10,20 @@ class ContextBuilder {
   buildContext(workflowCount = 2, includeSteps = false) {
     let context = '';
 
-    // 1. Базовый промпт (основы n8n)
+    // 1. Basic prompt (n8n fundamentals)
     context += this.readFile('context/base-prompt.md');
     context += '\n\n---\n\n';
 
-    // 2. Актуальный контекст
-    context += '# Актуальный контекст n8n\n\n';
+    // 2. Current context
+    context += '# Current n8n Context\n\n';
     context += this.readFile('context/context7.md');
     context += '\n\n---\n\n';
 
-    // 3. Архитектурные паттерны (правила построения)
+    // 3. Architectural patterns (construction rules)
     context += this.readFile('context/arch-patterns.md');
     context += '\n\n---\n\n';
 
-    // 4. Пошаговые инструкции (опционально)
+    // 4. Step-by-step instructions (optional)
     if (includeSteps) {
       context += this.readFile('context/step-by-step.md');
       context += '\n\n---\n\n';
@@ -34,8 +34,8 @@ class ContextBuilder {
     context += this.getSnippets();
     context += '\n---\n\n';
 
-    // 6. Примеры workflow
-    context += '# Примеры workflow\n\n';
+    // 6. Workflow examples
+    context += '# Workflow Examples\n\n';
     context += this.getWorkflowExamples(workflowCount);
 
     return context;
@@ -48,7 +48,7 @@ class ContextBuilder {
     let snippets = '';
     const files = fs.readdirSync(snippetsDir)
       .filter(file => file.endsWith('.md') && file !== 'README.md')
-      .slice(0, 6); // Ключевые snippets
+      .slice(0, 6); // Key snippets
 
     files.forEach(file => {
       const content = this.readFile(`snippets/${file}`);

@@ -1,8 +1,8 @@
 # Switch Node
 
-Маршрутизация данных по условиям с именованными выходами.
+Data routing by conditions with named outputs.
 
-### Пример 1: Простое строковое условие
+### Example 1: Simple String Condition
 ```json
 {
   "parameters": {
@@ -29,10 +29,8 @@
   "typeVersion": 3.2
 }
 ```
-```
 
-
-### Пример 2: Множественные события webhook
+### Example 2: Multiple Webhook Events
 ```json
 {
   "parameters": {
