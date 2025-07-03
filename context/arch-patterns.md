@@ -1,26 +1,26 @@
-# Архитектурные паттерны workflow
+# Workflow Architectural Patterns
 
-Правила и особенности построения корректных n8n workflow.
+Rules and features for building correct n8n workflows.
 
-## Правила генерации JSON
+## JSON Generation Rules
 
-### 1. Никаких комментариев в JSON
-❌ **НИКОГДА** не используйте комментарии:
+### 1. No Comments in JSON
+❌ **NEVER** use comments:
 ```json
 {
   "parameters": {
-    // Это сломает JSON!
+    // This will break JSON!
   }
 }
 ```
 
 
-### 2. Один workflow на JSON
-- Генерировать только один workflow в JSON
-- Если нужно несколько — создавать отдельные блоки
-- Не использовать массивы workflow
+### 2. One Workflow per JSON
+- Generate only one workflow in JSON
+- If multiple are needed — create separate blocks
+- Do not use workflow arrays
 
-### 3. Обязательные поля
+### 3. Required Fields
 ```json
 {
   "name": "Workflow Name",
@@ -33,16 +33,16 @@
 ```
 
 
-## Правила соединений (connections)
+## Connection Rules (connections)
 
-### 1. Точное соответствие имен
-- Поле "node" в connections ТОЧНО совпадает с "name" ноды
-- При изменении имени ноды — обновить connections
-- Использовать читаемые имена (не UUID)
+### 1. Exact Name Matching
+- The "node" field in connections EXACTLY matches the "name" of the node
+- When changing node name — update connections
+- Use readable names (not UUID)
 
-### 2. AI компоненты: направление ОТ компонента К агенту
-❌ **Неправильно:** AI Agent → Chat Model  
-✅ **Правильно:** Chat Model → AI Agent
+### 2. AI Components: Direction FROM Component TO Agent
+❌ **Incorrect:** AI Agent → Chat Model  
+✅ **Correct:** Chat Model → AI Agent
 
 ```json
 "connections": {
@@ -55,15 +55,15 @@
 ```
 
 
-### 3. Обработка ошибок
-- Первый элемент массива — успех
-- Второй элемент массива — ошибка
-- Обязательно `"onError": "continueErrorOutput"`
+### 3. Error Handling
+- First array element — success
+- Second array element — error
+- Required `"onError": "continueErrorOutput"`
 
-## Паттерны объединения потоков
+## Stream Merging Patterns
 
-### 1. Merge node для параллельных потоков
-**ВСЕГДА** используйте Merge для ожидания нескольких потоков:
+### 1. Merge node for parallel streams
+**ALWAYS** use Merge to wait for multiple streams:
 
 ```json
 {
@@ -77,7 +77,7 @@
 ```
 
 
-### 2. Последовательность подключения к Merge
+### 2. Connection Sequence to Merge
 ```
 Flow 1 ──┐
          ├──> Merge ──> Next Node
@@ -85,10 +85,10 @@ Flow 2 ──┘
 ```
 
 
-## Паттерны условного ветвления
+## Conditional Branching Patterns
 
-### 1. Switch node с именованными выходами
-**ВСЕГДА** используйте `renameOutput: true` и `outputKey`:
+### 1. Switch node with named outputs
+**ALWAYS** use `renameOutput: true` and `outputKey`:
 
 ```json
 {
@@ -98,9 +98,9 @@ Flow 2 ──┘
 }
 ```
 
-## Обработка ошибок
+## Error Handling
 
-### 1. Включение второго выхода
+### 1. Enabling Second Output
 ```json
 {
   "parameters": {...},
@@ -108,7 +108,7 @@ Flow 2 ──┘
 }
 ```
 
-### 2. Структура connections с ошибками
+### 2. Connections Structure with Errors
 ```json
 "connections": {
   "API Call": {
@@ -121,9 +121,9 @@ Flow 2 ──┘
 ```
 
 
-## AI Agent структура
+## AI Agent Structure
 
-### 1. Базовая архитектура
+### 1. Basic Architecture
 ```
 Chat Model ──ai_languageModel──┐
 Memory ────────ai_memory───────┤──> AI Agent ──main──> Response  
@@ -131,18 +131,18 @@ Tools ──────────ai_tool────────┘
 ```
 
 
-### 2. Актуальные префиксы для AI
-❌ **Устарело:** `n8n-nodes-langchain.agent`  
-✅ **Актуально:** `@n8n/n8n-nodes-langchain.agent`
+### 2. Current Prefixes for AI
+❌ **Deprecated:** `n8n-nodes-langchain.agent`  
+✅ **Current:** `@n8n/n8n-nodes-langchain.agent`
 
-### 3. Типы соединений для AI
-- `ai_languageModel` — от Chat Model к агенту
-- `ai_memory` — от Memory к агенту  
-- `ai_tool` — от Tool к агенту
+### 3. Connection Types for AI
+- `ai_languageModel` — from Chat Model to agent
+- `ai_memory` — from Memory to agent  
+- `ai_tool` — from Tool to agent
 
-## Memory паттерны
+## Memory Patterns
 
-### 1. Уникальные ключи сессий
+### 1. Unique Session Keys
 ```json
 {
   "sessionIdType": "customKey",
@@ -152,7 +152,7 @@ Tools ──────────ai_tool────────┘
 ```
 
 
-### 2. TTL для автоочистки
+### 2. TTL for Auto-cleanup
 ```json
 {
   "sessionTTL": 864000
@@ -160,15 +160,15 @@ Tools ──────────ai_tool────────┘
 ```
 
 
-## Webhook паттерны
+## Webhook Patterns
 
-### 1. Trigger + Response связка
+### 1. Trigger + Response Pair
 ```
 Webhook Trigger → Process → Respond to Webhook
 ```
 
 
-### 2. Правильный ответ
+### 2. Correct Response
 ```json
 {
   "parameters": {
@@ -180,16 +180,16 @@ Webhook Trigger → Process → Respond to Webhook
 ```
 
 
-## Валидация и тестирование
+## Validation and Testing
 
-### 1. Перед выдачей JSON
-- Проверить синтаксис JSON
-- Убедиться в отсутствии комментариев
-- Проверить соответствие имен в connections
-- Убедиться в актуальности typeVersion
+### 1. Before JSON Output
+- Check JSON syntax
+- Ensure no comments are present
+- Verify name matching in connections
+- Ensure typeVersion is current
 
-### 2. Отладка workflow
-- Сохранить и активировать
-- Протестировать триггер  
-- Проверить логи выполнения
-- Использовать Error Output для диагностики
+### 2. Workflow Debugging
+- Save and activate
+- Test trigger  
+- Check execution logs
+- Use Error Output for diagnostics

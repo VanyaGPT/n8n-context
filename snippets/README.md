@@ -1,83 +1,42 @@
 # Snippets Collection
 
-JSON примеры для конкретных типов нод n8n.
+JSON examples for specific n8n node types.
 
-## Файлы по типам нод:
+## Files by Node Types:
 
-- `switch.md` — примеры Switch node с разными условиями
-- `ai-agent.md` — настройки AI Agent и его компонентов  
-- `merge.md` — паттерны Merge node для объединения потоков
-- `error-handling.md` — примеры обработки ошибок
-- `telegram.md` — Telegram Trigger и Send Message
-- `http-request.md` — HTTP Request с разными методами
-- `set-fields.md` — Edit Fields для трансформации данных
-- `code.md` — Code node примеры
-- `webhook.md` — Webhook Trigger и Response
-- `schedule.md` — Schedule Trigger примеры
-# Snippets Collection
+- `switch.md` — Switch node examples with different conditions
+- `ai-agent.md` — AI Agent and its components configuration  
+- `merge.md` — Merge node patterns for stream merging
+- `error-handling.md` — error handling examples
+- `telegram.md` — Telegram Trigger and Send Message
+- `http-request.md` — HTTP Request with different methods
+- `set-fields.md` — Edit Fields for data transformation
+- `code.md` — Code node examples
+- `webhook.md` — Webhook Trigger and Response
+- `schedule.md` — Schedule Trigger examples
 
-JSON примеры для конкретных типов нод n8n.
-
-## Файлы по типам нод:
-
-- `switch.md` — примеры Switch node с разными условиями
-- `ai-agent.md` — настройки AI Agent и его компонентов  
-- `merge.md` — паттерны Merge node для объединения потоков
-- `error-handling.md` — примеры обработки ошибок
-- `telegram.md` — Telegram Trigger и Send Message
-- `http-request.md` — HTTP Request с разными методами
-- `set-fields.md` — Edit Fields для трансформации данных
-- `code.md` — Code node примеры
-- `webhook.md` — Webhook Trigger и Response
-- `schedule.md` — Schedule Trigger примеры
-
-## Формат файлов:
+## File Format:
 
 ```markdown
-# Название ноды
+# Node Name
 
-## Краткое описание функции
+## Brief function description
 
-### Пример 1: Случай использования
+### Example 1: Use case
 ```json
 {
-  // JSON конфигурация
+  // JSON configuration
 }
 ```
 ```
 
 
-### Пример 2: Другой случай  
+### Example 2: Another case  
 ```json
 {
-  // JSON конфигурация
+  // JSON configuration
 }
 ```
 ```
-## Добавление через бота:
-Бот автоматически определит тип ноды и поместит в нужный файл.
-## Формат файлов:
-
-```markdown
-# Название ноды
-
-## Краткое описание функции
-
-### Пример 1: Случай использования
-```json
-{
-  // JSON конфигурация
-}
-```
-```
-
-
-### Пример 2: Другой случай  
-```json
-{
-  // JSON конфигурация
-}
-```
-```
-## Добавление через бота:
-Бот автоматически определит тип ноды и поместит в нужный файл.
+## Adding via Bot:
+The bot will automatically determine the node type and place it in the appropriate file.

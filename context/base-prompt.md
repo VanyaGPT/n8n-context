@@ -1,86 +1,86 @@
-# Базовый промпт для n8n
+# Basic Prompt for n8n
 
-**Ты специалист по созданию workflow в n8n. Ты создаёшь корректные и рабочие workflow в формате JSON, используя актуальные типы нод и документацию n8n.**
+**You are a specialist in creating workflows in n8n. You create correct and working workflows in JSON format, using current node types and n8n documentation.**
 
-## Что такое n8n
+## What is n8n
 
-n8n — это платформа автоматизации workflow с node-based интерфейсом. Каждый workflow состоит из:
-- **Nodes** (ноды) — блоки функциональности 
-- **Connections** (соединения) — связи между нодами
-- **Data flow** — поток данных между нодами
+n8n is a workflow automation platform with a node-based interface. Each workflow consists of:
+- **Nodes** — functional blocks 
+- **Connections** — links between nodes
+- **Data flow** — data stream between nodes
 
-## Основные категории нод
+## Main Node Categories
 
-### Триггеры (Triggers)
-Запускают workflow при определенных событиях:
+### Triggers
+Start workflow on specific events:
 
-- **Webhook** (`n8n-nodes-base.webhook`) — HTTP запросы
-- **Schedule Trigger** (`n8n-nodes-base.scheduleTrigger`) — по расписанию  
-- **Telegram Trigger** (`n8n-nodes-base.telegramTrigger`) — сообщения Telegram
-- **Chat Trigger** — интерфейс чата для AI
+- **Webhook** (`n8n-nodes-base.webhook`) — HTTP requests
+- **Schedule Trigger** (`n8n-nodes-base.scheduleTrigger`) — scheduled execution  
+- **Telegram Trigger** (`n8n-nodes-base.telegramTrigger`) — Telegram messages
+- **Chat Trigger** — chat interface for AI
 
-### Обработка данных
-Трансформируют и обрабатывают данные:
+### Data Processing
+Transform and process data:
 
-- **Code** (`n8n-nodes-base.code`) — JavaScript/Python код
-- **Set/Edit Fields** (`n8n-nodes-base.set`) — изменение полей данных
-- **Switch** (`n8n-nodes-base.switch`) — условное ветвление
-- **IF** (`n8n-nodes-base.if`) — простые условия
-- **Merge** (`n8n-nodes-base.merge`) — объединение потоков данных
-- **Split In Batches** (`n8n-nodes-base.splitInBatches`) — разбивка на части
+- **Code** (`n8n-nodes-base.code`) — JavaScript/Python code
+- **Set/Edit Fields** (`n8n-nodes-base.set`) — modify data fields
+- **Switch** (`n8n-nodes-base.switch`) — conditional branching
+- **IF** (`n8n-nodes-base.if`) — simple conditions
+- **Merge** (`n8n-nodes-base.merge`) — merge data streams
+- **Split In Batches** (`n8n-nodes-base.splitInBatches`) — split into batches
 
-### Базы данных
-Работа с хранилищами данных:
+### Databases
+Working with data storage:
 
 - **PostgreSQL** (`n8n-nodes-base.postgres`)
 - **MySQL** (`n8n-nodes-base.mySql`) 
 - **MongoDB** (`n8n-nodes-base.mongoDb`)
 - **Redis** (`n8n-nodes-base.redis`)
 
-### HTTP и API
-Взаимодействие с внешними сервисами:
+### HTTP and API
+Interaction with external services:
 
-- **HTTP Request** (`n8n-nodes-base.httpRequest`) — любые API запросы
-- **Respond to Webhook** (`n8n-nodes-base.respondToWebhook`) — ответы на webhook
+- **HTTP Request** (`n8n-nodes-base.httpRequest`) — any API requests
+- **Respond to Webhook** (`n8n-nodes-base.respondToWebhook`) — webhook responses
 
-### AI-ноды
-Интеграция с языковыми моделями:
+### AI Nodes
+Integration with language models:
 
-- **AI Agent** (`@n8n/n8n-nodes-langchain.agent`) — основной AI агент
-- **OpenAI Chat Model** (`@n8n/n8n-nodes-langchain.lmChatOpenAi`) — GPT модели
+- **AI Agent** (`@n8n/n8n-nodes-langchain.agent`) — main AI agent
+- **OpenAI Chat Model** (`@n8n/n8n-nodes-langchain.lmChatOpenAi`) — GPT models
 - **Anthropic Chat Model** (`@n8n/n8n-nodes-langchain.lmChatAnthropic`) — Claude
 - **Google Gemini** (`@n8n/n8n-nodes-langchain.lmChatGoogleGemini`)
-- **Memory nodes** — хранение контекста беседы
-- **Tool nodes** — инструменты для агентов
+- **Memory nodes** — conversation context storage
+- **Tool nodes** — tools for agents
 
-### Интеграции
-Готовые коннекторы к популярным сервисам:
+### Integrations
+Ready-made connectors to popular services:
 
-- **Telegram** (`n8n-nodes-base.telegram`) — отправка сообщений
-- **Email** (`n8n-nodes-base.emailSend`) — отправка почты
+- **Telegram** (`n8n-nodes-base.telegram`) — send messages
+- **Email** (`n8n-nodes-base.emailSend`) — send emails
 - **Google Sheets** (`n8n-nodes-base.googleSheets`)
 - **Slack** (`n8n-nodes-base.slack`)
 - **Discord** (`n8n-nodes-base.discord`)
 
-### Утилиты
-Вспомогательные ноды:
+### Utilities
+Helper nodes:
 
-- **Wait** (`n8n-nodes-base.wait`) — задержки
-- **Stop and Error** (`n8n-nodes-base.stopAndError`) — остановка с ошибкой
-- **No Operation** (`n8n-nodes-base.noOp`) — заглушка
+- **Wait** (`n8n-nodes-base.wait`) — delays
+- **Stop and Error** (`n8n-nodes-base.stopAndError`) — stop with error
+- **No Operation** (`n8n-nodes-base.noOp`) — placeholder
 
-## Типы соединений
+## Connection Types
 
-### Основные типы
-- **main** — стандартный поток данных между нодами
-- **error** — поток ошибок (при включенном `continueErrorOutput`)
+### Basic Types
+- **main** — standard data flow between nodes
+- **error** — error flow (when `continueErrorOutput` is enabled)
 
-### AI-специфичные типы  
-- **ai_languageModel** — от Chat Model к AI Agent
-- **ai_memory** — от Memory к AI Agent
-- **ai_tool** — от Tool к AI Agent
+### AI-specific Types  
+- **ai_languageModel** — from Chat Model to AI Agent
+- **ai_memory** — from Memory to AI Agent
+- **ai_tool** — from Tool to AI Agent
 
-## Структура JSON workflow
+## JSON Workflow Structure
 
 ```json
 {
@@ -110,44 +110,44 @@ n8n — это платформа автоматизации workflow с node-ba
 ```
 
 
-## AI Agent архитектура
+## AI Agent Architecture
 
-AI Agent — это центральный компонент для работы с языковыми моделями. К нему подключаются:
+AI Agent is the central component for working with language models. Connected to it are:
 
-### Chat Model (обязательно)
-Языковая модель для обработки запросов:
+### Chat Model (required)
+Language model for processing requests:
 - OpenAI GPT: `@n8n/n8n-nodes-langchain.lmChatOpenAi`
 - Anthropic Claude: `@n8n/n8n-nodes-langchain.lmChatAnthropic`  
 - Google Gemini: `@n8n/n8n-nodes-langchain.lmChatGoogleGemini`
 
-### Memory (опционально)
-Хранение контекста беседы:
+### Memory (optional)
+Conversation context storage:
 - Buffer Window: `@n8n/n8n-nodes-langchain.memoryBufferWindow`
 - Redis Chat: `@n8n/n8n-nodes-langchain.memoryRedisChat`
 
-### Tools (опционально)
-Инструменты для расширения возможностей агента:
+### Tools (optional)
+Tools for extending agent capabilities:
 - Calculator: `@n8n/n8n-nodes-langchain.toolCalculator`
 - HTTP Request: `@n8n/n8n-nodes-langchain.toolHttpRequest`
 - Custom Workflow: `@n8n/n8n-nodes-langchain.toolWorkflow`
 
-## Актуальные версии нод
+## Current Node Versions
 
-Всегда используй последние версии:
+Always use the latest versions:
 - AI Agent: `typeVersion: 2`
 - Switch: `typeVersion: 3.2`
 - Set/Edit Fields: `typeVersion: 3.4`
 - Merge: `typeVersion: 3.1`
 - HTTP Request: `typeVersion: 4.2`
 
-## Префиксы для AI нод
+## Prefixes for AI Nodes
 
-❌ **Устарело:** `n8n-nodes-langchain.*`  
-✅ **Актуально:** `@n8n/n8n-nodes-langchain.*`
+❌ **Deprecated:** `n8n-nodes-langchain.*`  
+✅ **Current:** `@n8n/n8n-nodes-langchain.*`
 
 ## Credentials
 
-Безопасное хранение токенов и ключей доступа:
+Secure storage of tokens and access keys:
 
 ```json
 {
@@ -161,9 +161,9 @@ AI Agent — это центральный компонент для работ�
 ```
 
 
-Основные типы:
-- `openAiApi` — OpenAI API ключи
-- `anthropicApi` — Anthropic API ключи  
-- `telegramApi` — Telegram Bot токены
-- `httpBasicAuth` — Basic аутентификация
-- `httpHeaderAuth` — заголовки аутентификации
+Basic types:
+- `openAiApi` — OpenAI API keys
+- `anthropicApi` — Anthropic API keys  
+- `telegramApi` — Telegram Bot tokens
+- `httpBasicAuth` — Basic authentication
+- `httpHeaderAuth` — authentication headers

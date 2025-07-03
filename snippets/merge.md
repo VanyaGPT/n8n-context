@@ -1,8 +1,8 @@
 # Merge Node
 
-Объединение параллельных потоков данных.
+Merging parallel data streams.
 
-### Пример 1: Combine All (стандартный)
+### Example 1: Combine All (standard)
 ```json
 {
   "parameters": {
@@ -14,35 +14,7 @@
 }
 ```
 
-# Merge Node
-
-Объединение параллельных потоков данных.
-
-### Пример 1: Combine All (стандартный)
-```json
-{
-  "parameters": {
-    "mode": "combine",
-    "combineBy": "combineAll"
-  },
-  "type": "n8n-nodes-base.merge",
-  "typeVersion": 3.1
-}
-```
-
-
-### Пример 2: Merge по позиции
-```json
-{
-  "parameters": {
-    "mode": "combine",
-    "combineBy": "mergeByPosition"
-  },
-  "type": "n8n-nodes-base.merge",
-  "typeVersion": 3.1
-}
-```
-### Пример 2: Merge по позиции
+### Example 2: Merge by Position
 ```json
 {
   "parameters": {
