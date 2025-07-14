@@ -18,7 +18,7 @@ Components for creating a unified system prompt. These files are not intended to
 - `base-prompt.md` — main component with description of n8n, node types, and JSON structure
 - `arch-patterns.md` — architectural patterns for building workflows
 - `step-by-step.md` — step-by-step instructions for creating workflows
-- `context7.md` — additional context for working with n8n
+- `ai-workflow-rules.md` — AI-specific workflow rules and guidelines
 
 ### [`snippets/`](https://github.com/VanyaGPT/n8n-context/tree/main/snippets)
 
@@ -48,13 +48,19 @@ Tools for working with the repository:
 
 1. To create a unified system prompt, use the `tools/context-builder.js` script:
    ```
-   node tools/context-builder.js [workflow_examples_count] [--steps]
+   node tools/context-builder.js [workflow_examples_count] [--steps] [--filename output.md]
    ```
    - `workflow_examples_count` (optional) - number of workflow examples to include (default is 2)
    - `--steps` (optional) - flag to include step-by-step instructions
-   - The result is saved to a `full-context.md` file
+   - `--filename` (optional) - custom output filename (default is full-context.md)
+   - The result is saved to the `dist/` directory
+   
+   You can also use the npm script:
+   ```
+   npm run build
+   ```
 
-2. When receiving a request from a user to create an n8n JSON workflow, the AI should first use the created system prompt from the `full-context.md` file.
+2. When receiving a request from a user to create an n8n JSON workflow, the AI should first use the created system prompt from the `dist/full-context.md` file.
 
 3. Use examples from the `workflows/` directory as reference for creating similar JSON workflow files
 

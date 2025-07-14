@@ -121,24 +121,6 @@ Flow 2 ──┘
 ```
 
 
-## AI Agent Structure
-
-### 1. Basic Architecture
-```
-Chat Model ──ai_languageModel──┐
-Memory ────────ai_memory───────┤──> AI Agent ──main──> Response  
-Tools ──────────ai_tool────────┘
-```
-
-
-### 2. Current Prefixes for AI
-❌ **Deprecated:** `n8n-nodes-langchain.agent`  
-✅ **Current:** `@n8n/n8n-nodes-langchain.agent`
-
-### 3. Connection Types for AI
-- `ai_languageModel` — from Chat Model to agent
-- `ai_memory` — from Memory to agent  
-- `ai_tool` — from Tool to agent
 
 ## Memory Patterns
 

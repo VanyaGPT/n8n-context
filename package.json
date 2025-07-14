@@ -1,0 +1,13 @@
+{
+  "name": "n8n-context",
+  "version": "1.0.0",
+  "description": "Collection of components for creating a system prompt for n8n",
+  "main": "tools/context-builder.js",
+  "scripts": {
+    "build": "node tools/context-builder.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["n8n", "workflow", "automation"],
+  "author": "Ivan Afanasov",
+  "license": "MIT"
+}

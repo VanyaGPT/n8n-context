@@ -14,27 +14,22 @@ class ContextBuilder {
     context += this.readFile('context/base-prompt.md');
     context += '\n\n---\n\n';
 
-    // 2. Current context
-    context += '# Current n8n Context\n\n';
-    context += this.readFile('context/context7.md');
-    context += '\n\n---\n\n';
-
-    // 3. Architectural patterns (construction rules)
+    // 2. Architectural patterns (construction rules)
     context += this.readFile('context/arch-patterns.md');
     context += '\n\n---\n\n';
 
-    // 4. Step-by-step instructions (optional)
+    // 3. Step-by-step instructions (optional)
     if (includeSteps) {
       context += this.readFile('context/step-by-step.md');
       context += '\n\n---\n\n';
     }
 
-    // 5. JSON Snippets
+    // 4. JSON Snippets
     context += '# JSON Snippets\n\n';
     context += this.getSnippets();
     context += '\n---\n\n';
 
-    // 6. Workflow examples
+    // 5. Workflow examples
     context += '# Workflow Examples\n\n';
     context += this.getWorkflowExamples(workflowCount);
 
@@ -90,7 +85,11 @@ class ContextBuilder {
   }
 
   saveContext(context, filename = 'full-context.md') {
-    const outputPath = path.join(this.baseDir, filename);
+    const distDir = path.join(this.baseDir, 'dist');
+    if (!fs.existsSync(distDir)) {
+      fs.mkdirSync(distDir, { recursive: true });
+    }
+    const outputPath = path.join(distDir, filename);
     fs.writeFileSync(outputPath, context);
     console.log(`Context saved to ${outputPath}`);
   }
@@ -99,13 +98,28 @@ class ContextBuilder {
 // CLI usage
 if (require.main === module) {
   const builder = new ContextBuilder();
-  const workflowCount = process.argv[2] ? parseInt(process.argv[2]) : 2;
-  const includeSteps = process.argv.includes('--steps');
+  
+  // Parse arguments
+  let workflowCount = 2;
+  let includeSteps = false;
+  let filename = 'full-context.md';
+  
+  for (let i = 2; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+    if (arg === '--steps') {
+      includeSteps = true;
+    } else if (arg === '--filename' && process.argv[i + 1]) {
+      filename = process.argv[i + 1];
+      i++; // Skip next argument
+    } else if (!isNaN(parseInt(arg))) {
+      workflowCount = parseInt(arg);
+    }
+  }
 
   const context = builder.buildContext(workflowCount, includeSteps);
-  builder.saveContext(context);
+  builder.saveContext(context, filename);
 
-  console.log(`Built context with ${workflowCount} workflow examples`);
+  console.log(`Built context with ${workflowCount} workflow examples (no context7)`);
   if (includeSteps) console.log('Included step-by-step instructions');
 }
 
