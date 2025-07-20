@@ -64,17 +64,3 @@ Tools for working with the repository:
 3. Use examples from the `workflows/` directory as reference for creating similar JSON workflow files
 
 **Important:** Files in the `context/` directory are not intended for independent use. They are components for creating a unified system prompt.
-
----
-
-## Contributing
-
-### Bot [@VanyaGPTn8nContextBot](https://t.me/VanyaGPTn8nContextBot)
-
-* All submitted instructions go into corresponding folders
-* The bot checks that there are no duplicate prompts or examples
-* If your instruction already exists, the bot will tell you
-
-Alternatively: you can submit a pull request directly if you don't want to use the bot or need a more complex format than plain text.
-
----
