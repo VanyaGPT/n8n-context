@@ -2,9 +2,9 @@
   "name": "n8n-context",
   "version": "1.0.0",
   "description": "Collection of components for creating a system prompt for n8n",
-  "main": "tools/context-builder.js",
+  "main": "src/tools/context-builder.js",
   "scripts": {
-    "build": "node tools/context-builder.js",
+    "build": "node src/tools/context-builder.js --filename arch.md --pattern ai",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["n8n", "workflow", "automation"],

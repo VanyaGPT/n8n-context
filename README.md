@@ -15,7 +15,6 @@ n8n is a workflow automation platform with a node-based interface that allows cr
 ### [`context/`](https://github.com/VanyaGPT/n8n-context/tree/main/context)
 
 Components for creating a unified system prompt. These files are not intended to be used independently, but serve as constituent parts of the system prompt:
-- `base-prompt.md` — main component with description of n8n, node types, and JSON structure
 - `arch-patterns.md` — architectural patterns for building workflows
 - `step-by-step.md` — step-by-step instructions for creating workflows
 - `ai-workflow-rules.md` — AI-specific workflow rules and guidelines

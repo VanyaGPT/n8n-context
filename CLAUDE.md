@@ -78,7 +78,7 @@ The system prompt for Claude Code is derived from the unified system prompt gene
 
 **IMPORTANT: When building n8n workflows, prioritize information sources in this order:**
 
-1. **Generated system prompt** (`dist/full-context.md`) - Use as the primary reference for:
+1. **Generated system prompt** (`dist/arch.md`) - Use as the primary reference for:
    - Node configurations and patterns
    - Workflow architectural examples
    - JSON structure and best practices
