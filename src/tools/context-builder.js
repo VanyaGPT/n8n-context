@@ -14,16 +14,20 @@ class ContextBuilder {
     context += this.readFile('context/arch-patterns.md');
     context += '\n\n---\n\n';
 
-    // 2. Architectural AI patterns (construction rules)
+    // 2. Loop patterns (iteration and batching rules)
+    context += this.readFile('context/loop-patterns.md');
+    context += '\n\n---\n\n';
+
+    // 3. Architectural AI patterns (construction rules)
     context += this.readFile('context/ai-workflow-rules.md');
     context += '\n\n---\n\n';
 
-    // 3. JSON Snippets
+    // 4. JSON Snippets
     context += '# JSON Snippets\n\n';
     context += this.getSnippets();
     context += '\n---\n\n';
 
-    // 4. Workflow examples
+    // 5. Workflow examples
     context += '# Workflow Examples\n\n';
     context += this.getWorkflowExamples(workflowCount, pattern);
 
